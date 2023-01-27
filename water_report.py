@@ -1,0 +1,210 @@
+from models import WaterUtility, Contaminant, ContaminantReading
+import json
+import base64
+from pathlib import Path
+
+import pandas as pd
+import streamlit as st
+import plotly.graph_objects as go
+
+from streamlit_extras.colored_header import colored_header
+from annotated_text import annotated_text
+from streamlit_lottie import st_lottie
+
+def load_lottiefile(filepath: str):
+    with open(filepath, 'r') as f:
+        return json.load(f)
+
+def img_to_bytes(img_path):
+    img_bytes = Path(img_path).read_bytes()
+    encoded = base64.b64encode(img_bytes).decode()
+    return encoded
+
+def img_to_html(img_path):
+    img_html = "<img src='data:image/png;base64,{}' width='50' class='img-fluid'>".format(
+      img_to_bytes(img_path)
+    )
+    return img_html
+
+
+# -------- SETTINGS --------
+vert_space = '<div style="padding: 10px 5px;"></div>'
+territories = WaterUtility.get_all()
+logo = 'https://lh4.googleusercontent.com/r_DvVzF2wmpBC3ZVQBlofpveBTkLTNPWE8RBFhQvSw571RLyf4e5i8fF6nYsnGY4mNM=w2400'
+centered_logo = "<p style='text-align: center; color: grey;'>"+img_to_html('logo/logo.png')+"</p>"
+by_wd = 'https://lh5.googleusercontent.com/V-DcILHJebKcQO9vRDkr45ALqKNYwfoutn-LOyS9Hcv1ysjetx3J7ltuQ2Ua3EEs53Q=w2400'
+lottie = load_lottiefile('lottie/water_report.json')
+
+
+# ------- PAGE CONFIG -------
+st.set_page_config(
+    page_title='Tap Water Data',
+    page_icon='logo/logo.png',
+    initial_sidebar_state='expanded',
+)
+
+
+
+
+
+# -------------------------------- APP --------------------------------
+
+
+# -------- SIDEBAR --------
+#with st.sidebar:
+    #st.image(logo)
+    
+    
+
+
+# -------- MAIN --------
+# TODO: Replace hard-coded values with variables from the database
+st.markdown(centered_logo, unsafe_allow_html=True)
+st.markdown(vert_space, unsafe_allow_html=True)
+
+main_title = '<h1 style="text-align:center">Enter your zipcode</h1>'
+st.markdown(main_title, unsafe_allow_html=True)
+#st.title('Enter your zipcode')
+st.markdown(vert_space, unsafe_allow_html=True)
+city_state_zip = st.selectbox('Enter your Zipcode', territories, label_visibility='collapsed')
+
+if city_state_zip:
+    wutility = WaterUtility.get_from_db(city_state_zip)
+    readings = ContaminantReading.get_from_db(wutility)
+    # TODO: Get top 5 contaminants
+    primary_cont = WaterUtility.get_primary(readings)
+    secondary_cont = WaterUtility.get_secondary(readings)
+
+    st.title('Tap Water Report (2021)')
+    colored_header(
+        label=f'*{city_state_zip}*',
+        description=f'Data was sourced from the most recent Consumer Confidence Report (CCR) published by **{wutility.name}** on June 2022.',
+        color_name='blue-70'
+    )
+    '---'
+    st.subheader('Water Aesthetics')
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        tds = secondary_cont['TDS']
+        st.metric(label='TDS', value=tds.max, delta=f'{int(tds.max)-500}', delta_color='inverse', help='Total Dissolved Solids should be below **500** as recommended by EPA')
+    with col2:
+        hardness = secondary_cont['Hardness']
+        st.metric(label='Hardness', value=hardness.max, delta=f'{int(hardness.max)-250}', delta_color='inverse', help='Hardness should be below **250** as recommended by EPA')
+    with col3:
+        ph = secondary_cont['pH']
+        st.metric(label='pH', value=ph.max, help='pH levels should be between **6.5 - 8.5** as recommended by EPA')
+    st.markdown(
+        '''
+        
+        '''
+    )
+    tds_desc = '<p style="font-family: Source Sans Pro, sans-serif; color:Gray;"><b>TDS</b>: A measure of how much solid particles (dirt, sand, minerals, bacteria, etc.) are present in the water.</p>'
+    hardness_desc = '<p style="font-family: Source Sans Pro, sans-serif; color:Gray;"><b>Hardness</b>: A measure of how much Magnesium and Calcium are present in the water. The white residue or spots that you see on your glassware is from hard water.</p>'
+    st.markdown(tds_desc, unsafe_allow_html=True)
+    st.markdown(hardness_desc, unsafe_allow_html=True)
+    
+    '---'
+
+
+    # Top 5 Contaminants Found in Your Water
+    st.header('Top 5 Contaminants Found in Your Water')
+
+    count = 1
+    pfas = '(Forever Chemicals)'
+    for each in primary_cont[:5]:
+        with st.expander(f"**{count}. {each.contaminant}** {pfas if each.contaminant.name in ['PFOS', 'PFOA'] else ''}"):
+            fig = go.Figure(data=[
+                go.Bar(x=[f'{each.max_reading if each.max_reading else each.perc}'], y=[f'{each.contaminant}'], name='Highest Level Detected', orientation='h', marker=dict(color='rgb(163, 22, 33)', line_color='rgb(55, 6, 23)', line_width=1.5),
+                opacity=0.5)])
+
+            fig.add_vline(x=each.mclg, line_width=2, line_dash='dash', line_color='green')
+            fig.add_annotation(x=each.mclg, y=1, arrowhead=1, ax=60, text='EPA Health Goal')
+
+            fig.update_layout(barmode='overlay', title_text=f'Presence of {each.contaminant} relative to EPA Public Health Goal', xaxis=dict(title=f'{each.contaminant.get_units_name()}'), yaxis=dict(title='Contaminant'))
+            config = {'staticPlot': True}
+            st.plotly_chart(fig, use_container_width=True, config=config)
+            
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.metric(label="Highest Level Detected", value=f"{each.max_reading if each.max_reading else each.perc} {each.contaminant.units}", delta=f"{'{:,.2f}'.format(float(each.factor))}x", delta_color='inverse')
+            with col2:
+                st.metric(label='EPA Health Goal', value=f'{each.mclg} {each.contaminant.units}', help='Level of a contaminant in drinking water below which there is no known or expected health risk')
+            with col3:
+                na = 'NA'
+                empty= ''
+                st.metric(label='Minimum Contaminant Level', value=f'{each.mcl if each.mcl else na} {each.contaminant.units if each.mcl else empty}', help='Level of a contaminant that Water Utilities cannot exceed')
+            
+
+            st.markdown(vert_space, unsafe_allow_html=True)
+            annotated_text(('Source', f'{each.contaminant}','rgba(28, 131, 225, .33)'))
+            st.write(f"{each.contaminant.source}")
+            
+            st.markdown(vert_space, unsafe_allow_html=True)
+            annotated_text(('Health Risk', f'{each.contaminant}','rgba(28, 131, 225, .33)'))
+            st.write(f"{each.contaminant.risk}")
+            
+
+            count += 1
+            st.markdown(vert_space, unsafe_allow_html=True)
+
+
+
+    
+    placeholder = st.empty()
+
+    if placeholder.button('More...'):
+        with placeholder.container():
+            count = 6
+            pfas = '(Forever Chemicals)'
+            for each in primary_cont[5:]:
+                with st.expander(f"**{count}. {each.contaminant}** {pfas if each.contaminant.name in ['PFOS', 'PFOA'] else ''}"):
+                    fig = go.Figure(data=[
+                        go.Bar(x=[f'{each.max_reading if each.max_reading else each.perc}'], y=[f'{each.contaminant}'], name='Highest Level Detected', orientation='h', marker=dict(color='rgb(163, 22, 33)', line_color='rgb(55, 6, 23)', line_width=1.5),
+                        opacity=0.5)])
+
+
+                    fig.add_vline(x=each.mclg, line_width=2, line_dash='dash', line_color='green')
+                    fig.add_annotation(x=each.mclg, y=1, arrowhead=1, ax=60, text='EPA Health Goal')
+
+                    fig.update_layout(barmode='overlay', title_text=f'Presence of {each.contaminant} relative to EPA Public Health Goal', xaxis=dict(title=f'{each.contaminant.get_units_name()}'), yaxis=dict(title='Contaminant'))
+                    config = {'staticPlot': True}
+                    st.plotly_chart(fig, use_container_width=True, config=config)
+                    
+                    col1, col2, col3 = st.columns(3)
+                    with col1:
+                        st.metric(label="Highest Level Detected", value=f"{each.max_reading if each.max_reading else each.perc} {each.contaminant.units}", delta=f"{'{:,.2f}'.format(float(each.factor))}x", delta_color='inverse')
+                    with col2:
+                        st.metric(label='EPA Health Goal', value=f'{each.mclg} {each.contaminant.units}', help='Level of a contaminant in drinking water below which there is no known or expected health risk')
+                    with col3:
+                        na = 'NA'
+                        empty= ''
+                        st.metric(label='Minimum Contaminant Level', value=f'{each.mcl if each.mcl else na} {each.contaminant.units if each.mcl else empty}', help='Level of a contaminant that Water Utilities cannot exceed')
+                    
+                    
+
+                    st.markdown(vert_space, unsafe_allow_html=True)
+                    annotated_text(('Source', f'{each.contaminant}','rgba(28, 131, 225, .33)'))
+                    st.write(f"{each.contaminant.source}")
+                    
+                    st.markdown(vert_space, unsafe_allow_html=True)
+                    annotated_text(('Health Risk', f'{each.contaminant}','rgba(28, 131, 225, .33)'))
+                    st.write(f"{each.contaminant.risk}")
+                    
+                    count += 1
+                    st.markdown(vert_space, unsafe_allow_html=True)
+
+    '---'
+    # Water Supply
+    st.subheader('Water Supply')
+    st.write(f'{wutility.supply}')
+
+    # Treatment Process
+    st.subheader('Treatment Process')
+    st.write(f'{wutility.treatment}')
+
+
+else:
+    hero_message = '<p style="text-align: center; font-family: Source Sans Pro, sans-serif; color:Gray;">The most <b>up-to-date</b> information you can find about your tap water.</p>'
+    st.markdown(hero_message, unsafe_allow_html=True)
+    st_lottie(lottie)
+
