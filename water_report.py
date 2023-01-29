@@ -64,7 +64,6 @@ st.markdown(vert_space, unsafe_allow_html=True)
 
 main_title = '<h1 style="text-align:center">Enter your zipcode</h1>'
 st.markdown(main_title, unsafe_allow_html=True)
-#st.title('Enter your zipcode')
 st.markdown(vert_space, unsafe_allow_html=True)
 city_state_zip = st.selectbox('Enter your Zipcode', territories, label_visibility='collapsed')
 
@@ -109,20 +108,31 @@ if city_state_zip:
     # Top 5 Contaminants Found in Your Water
     st.header('Top 5 Contaminants Found in Your Water')
 
+    def gauge(each):
+        each.max_reading = each.max_reading if each.max_reading else each.perc
+        each.mcl = each.mcl if each.mcl else each.mclg
+        max_gauge = [float(each.max_reading), float(each.mcl)]
+        fig = go.Figure(go.Indicator(
+            domain = {'x': [0, 1], 'y': [0, 1]},
+            value = float(each.max_reading),
+            mode = "gauge+number",
+            title = {'text': "Contaminant Reading"},
+            gauge = {'axis': {'range': [None, max(max_gauge)]},
+                    'steps' : [
+                        {'range': [float(each.mclg), float(f'{each.mcl if each.mcl else each.mclg}')], 'color': "lightgray"},
+                        {'range': [float(f'{each.mcl if each.mcl else each.mclg}'), max(max_gauge)], 'color': 'lightgray'}
+                        ],
+                    'threshold' : {'line': {'color': "red", 'width': 6}, 'thickness': 0.8, 'value': float(each.mclg)}}))
+        return fig
+
+
+
     count = 1
     pfas = '(Forever Chemicals)'
     for each in primary_cont[:5]:
         with st.expander(f"**{count}. {each.contaminant}** {pfas if each.contaminant.name in ['PFOS', 'PFOA'] else ''}"):
-            fig = go.Figure(data=[
-                go.Bar(x=[f'{each.max_reading if each.max_reading else each.perc}'], y=[f'{each.contaminant}'], name='Highest Level Detected', orientation='h', marker=dict(color='rgb(163, 22, 33)', line_color='rgb(55, 6, 23)', line_width=1.5),
-                opacity=0.5)])
-
-            fig.add_vline(x=each.mclg, line_width=2, line_dash='dash', line_color='green')
-            fig.add_annotation(x=each.mclg, y=1, arrowhead=1, ax=60, text='EPA Health Goal')
-
-            fig.update_layout(barmode='overlay', title_text=f'Presence of {each.contaminant} relative to EPA Public Health Goal', xaxis=dict(title=f'{each.contaminant.get_units_name()}'), yaxis=dict(title='Contaminant'))
-            config = {'staticPlot': True}
-            st.plotly_chart(fig, use_container_width=True, config=config)
+            fig = gauge(each)
+            st.plotly_chart(fig, use_container_width=True)
             
             col1, col2, col3 = st.columns(3)
             with col1:
@@ -158,17 +168,8 @@ if city_state_zip:
             pfas = '(Forever Chemicals)'
             for each in primary_cont[5:]:
                 with st.expander(f"**{count}. {each.contaminant}** {pfas if each.contaminant.name in ['PFOS', 'PFOA'] else ''}"):
-                    fig = go.Figure(data=[
-                        go.Bar(x=[f'{each.max_reading if each.max_reading else each.perc}'], y=[f'{each.contaminant}'], name='Highest Level Detected', orientation='h', marker=dict(color='rgb(163, 22, 33)', line_color='rgb(55, 6, 23)', line_width=1.5),
-                        opacity=0.5)])
-
-
-                    fig.add_vline(x=each.mclg, line_width=2, line_dash='dash', line_color='green')
-                    fig.add_annotation(x=each.mclg, y=1, arrowhead=1, ax=60, text='EPA Health Goal')
-
-                    fig.update_layout(barmode='overlay', title_text=f'Presence of {each.contaminant} relative to EPA Public Health Goal', xaxis=dict(title=f'{each.contaminant.get_units_name()}'), yaxis=dict(title='Contaminant'))
-                    config = {'staticPlot': True}
-                    st.plotly_chart(fig, use_container_width=True, config=config)
+                    fig = gauge(each)
+                    st.plotly_chart(fig, use_container_width=True)
                     
                     col1, col2, col3 = st.columns(3)
                     with col1:
