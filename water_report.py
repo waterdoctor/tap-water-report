@@ -73,7 +73,6 @@ if city_state_zip:
     # TODO: Get top 5 contaminants
     primary_cont = WaterUtility.get_primary(readings)
     secondary_cont = WaterUtility.get_secondary(readings)
-
     st.title('Tap Water Report (2021)')
     colored_header(
         label=f'*{city_state_zip}*',
