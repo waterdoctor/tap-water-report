@@ -146,7 +146,7 @@ class ContaminantReading:
     @staticmethod
     def get_from_db(wutility: WaterUtility) -> list[dict]:
         cr_list = []
-        creadings = readings.fetch({'origin': wutility.pwsid, 'year': wutility.last_updated}).items
+        creadings = readings.fetch({'origin': wutility.pwsid, 'year': wutility.last_updated - 1}).items
         for cr in creadings:
             cr.pop('key')
             cr_obj = ContaminantReading(**cr)
