@@ -68,140 +68,146 @@ st.markdown(vert_space, unsafe_allow_html=True)
 city_state_zip = st.selectbox('Enter your Zipcode', territories, label_visibility='collapsed')
 
 if city_state_zip:
-    wutility = WaterUtility.get_from_db(city_state_zip)
-    readings = ContaminantReading.get_from_db(wutility)
-    # TODO: Get top 5 contaminants
-    primary_cont = WaterUtility.get_primary(readings)
-    secondary_cont = WaterUtility.get_secondary(readings)
-    st.title('Tap Water Report (2021)')
-    colored_header(
-        label=f'*{city_state_zip}*',
-        description=f'Data was sourced from the most recent Consumer Confidence Report (CCR) published by **{wutility.name}** on June 2022.',
-        color_name='blue-70'
-    )
-    '---'
-    st.subheader('Water Aesthetics')
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        tds = secondary_cont['TDS']
-        st.metric(label='TDS', value=tds.max, delta=f'{int(tds.max)-500}', delta_color='inverse', help='Total Dissolved Solids should be below **500** as recommended by EPA')
-    with col2:
-        hardness = secondary_cont['Hardness']
-        st.metric(label='Hardness', value=hardness.max, delta=f'{int(hardness.max)-250}', delta_color='inverse', help='Hardness should be below **250** as recommended by EPA')
-    with col3:
-        ph = secondary_cont['pH']
-        st.metric(label='pH', value=ph.max, help='pH levels should be between **6.5 - 8.5** as recommended by EPA')
-    st.markdown(
-        '''
+    tab1, tab2 = st.tabs(['Report', 'More Info'])
+    with tab1:
+        wutility = WaterUtility.get_from_db(city_state_zip)
+        readings = ContaminantReading.get_from_db(wutility)
+        # TODO: Get top 5 contaminants
+        primary_cont = WaterUtility.get_primary(readings)
+        secondary_cont = WaterUtility.get_secondary(readings)
+        st.title('Tap Water Report (2021)')
+        colored_header(
+            label=f'*{city_state_zip}*',
+            description=f'Data was sourced from the most recent Consumer Confidence Report (CCR) published by **{wutility.name}** on June 2022.',
+            color_name='blue-70'
+        )
+        '---'
+        st.subheader('Water Aesthetics')
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            tds = secondary_cont['TDS']
+            st.metric(label='TDS', value=tds.max, delta=f'{int(tds.max)-500}', delta_color='inverse', help='Total Dissolved Solids should be below **500** as recommended by EPA')
+        with col2:
+            hardness = secondary_cont['Hardness']
+            st.metric(label='Hardness', value=hardness.max, delta=f'{int(hardness.max)-250}', delta_color='inverse', help='Hardness should be below **250** as recommended by EPA')
+        with col3:
+            ph = secondary_cont['pH']
+            st.metric(label='pH', value=ph.max, help='pH levels should be between **6.5 - 8.5** as recommended by EPA')
+        st.markdown(
+            '''
+            
+            '''
+        )
+        tds_desc = '<p style="font-family: Source Sans Pro, sans-serif; color:Gray;"><b>TDS</b>: A measure of how much solid particles (dirt, sand, minerals, bacteria, etc.) are present in the water.</p>'
+        hardness_desc = '<p style="font-family: Source Sans Pro, sans-serif; color:Gray;"><b>Hardness</b>: A measure of how much Magnesium and Calcium are present in the water. The white residue or spots that you see on your glassware is from hard water.</p>'
+        st.markdown(tds_desc, unsafe_allow_html=True)
+        st.markdown(hardness_desc, unsafe_allow_html=True)
         
-        '''
-    )
-    tds_desc = '<p style="font-family: Source Sans Pro, sans-serif; color:Gray;"><b>TDS</b>: A measure of how much solid particles (dirt, sand, minerals, bacteria, etc.) are present in the water.</p>'
-    hardness_desc = '<p style="font-family: Source Sans Pro, sans-serif; color:Gray;"><b>Hardness</b>: A measure of how much Magnesium and Calcium are present in the water. The white residue or spots that you see on your glassware is from hard water.</p>'
-    st.markdown(tds_desc, unsafe_allow_html=True)
-    st.markdown(hardness_desc, unsafe_allow_html=True)
+        '---'
+
+
+        # Top 5 Contaminants Found in Your Water
+        st.header('Top 5 Contaminants Found in Your Water')
+
+        def gauge(each):
+            each.max_reading = each.max_reading if each.max_reading else each.perc
+            each.mcl = each.mcl if each.mcl else each.mclg
+            max_gauge = [float(each.max_reading), float(each.mcl)]
+            fig = go.Figure(go.Indicator(
+                domain = {'x': [0, 1], 'y': [0, 1]},
+                value = float(each.max_reading),
+                mode = "gauge+number",
+                title = {'text': "Contaminant Reading"},
+                gauge = {'axis': {'range': [None, max(max_gauge)]},
+                        'steps' : [
+                            {'range': [float(each.mclg), float(f'{each.mcl if each.mcl else each.mclg}')], 'color': "lightgray"},
+                            {'range': [float(f'{each.mcl if each.mcl else each.mclg}'), max(max_gauge)], 'color': 'lightgray'}
+                            ],
+                        'threshold' : {'line': {'color': "red", 'width': 6}, 'thickness': 0.8, 'value': float(each.mclg)}}))
+            return fig
+
+
+
+        count = 1
+        pfas = '(Forever Chemicals)'
+        for each in primary_cont[:5]:
+            with st.expander(f"**{count}. {each.contaminant}** {pfas if each.contaminant.name in ['PFOS', 'PFOA'] else ''}"):
+                fig = gauge(each)
+                st.plotly_chart(fig, use_container_width=True)
+                
+                col1, col2, col3 = st.columns(3)
+                with col1:
+                    st.metric(label="Highest Level Detected", value=f"{each.max_reading if each.max_reading else each.perc} {each.contaminant.units}", delta=f"{'{:,.2f}'.format(float(each.factor))}x", delta_color='inverse')
+                with col2:
+                    st.metric(label='EPA Health Goal', value=f'{each.mclg} {each.contaminant.units}', help='Level of a contaminant in drinking water below which there is no known or expected health risk')
+                with col3:
+                    na = 'NA'
+                    empty= ''
+                    st.metric(label='Minimum Contaminant Level', value=f'{each.mcl if each.mcl else na} {each.contaminant.units if each.mcl else empty}', help='Level of a contaminant that Water Utilities cannot exceed')
+                
+
+                st.markdown(vert_space, unsafe_allow_html=True)
+                annotated_text(('Source', f'{each.contaminant}','rgba(28, 131, 225, .33)'))
+                st.write(f"{each.contaminant.source}")
+                
+                st.markdown(vert_space, unsafe_allow_html=True)
+                annotated_text(('Health Risk', f'{each.contaminant}','rgba(28, 131, 225, .33)'))
+                st.write(f"{each.contaminant.risk}")
+                
+
+                count += 1
+                st.markdown(vert_space, unsafe_allow_html=True)
+
+
+
+        
+        placeholder = st.empty()
+
+        if placeholder.button('More...'):
+            with placeholder.container():
+                count = 6
+                pfas = '(Forever Chemicals)'
+                for each in primary_cont[5:]:
+                    with st.expander(f"**{count}. {each.contaminant}** {pfas if each.contaminant.name in ['PFOS', 'PFOA'] else ''}"):
+                        fig = gauge(each)
+                        st.plotly_chart(fig, use_container_width=True)
+                        
+                        col1, col2, col3 = st.columns(3)
+                        with col1:
+                            st.metric(label="Highest Level Detected", value=f"{each.max_reading if each.max_reading else each.perc} {each.contaminant.units}", delta=f"{'{:,.2f}'.format(float(each.factor))}x", delta_color='inverse')
+                        with col2:
+                            st.metric(label='EPA Health Goal', value=f'{each.mclg} {each.contaminant.units}', help='Level of a contaminant in drinking water below which there is no known or expected health risk')
+                        with col3:
+                            na = 'NA'
+                            empty= ''
+                            st.metric(label='Minimum Contaminant Level', value=f'{each.mcl if each.mcl else na} {each.contaminant.units if each.mcl else empty}', help='Level of a contaminant that Water Utilities cannot exceed')
+                        
+                        
+
+                        st.markdown(vert_space, unsafe_allow_html=True)
+                        annotated_text(('Source', f'{each.contaminant}','rgba(28, 131, 225, .33)'))
+                        st.write(f"{each.contaminant.source}")
+                        
+                        st.markdown(vert_space, unsafe_allow_html=True)
+                        annotated_text(('Health Risk', f'{each.contaminant}','rgba(28, 131, 225, .33)'))
+                        st.write(f"{each.contaminant.risk}")
+                        
+                        count += 1
+                        st.markdown(vert_space, unsafe_allow_html=True)
+
+        '---'
+        
     
-    '---'
+    with tab2:
+        st.header('Additional Information')
+        
+        # Water Supply
+        st.subheader('Water Supply')
+        st.write(f'{wutility.supply}')
 
-
-    # Top 5 Contaminants Found in Your Water
-    st.header('Top 5 Contaminants Found in Your Water')
-
-    def gauge(each):
-        each.max_reading = each.max_reading if each.max_reading else each.perc
-        each.mcl = each.mcl if each.mcl else each.mclg
-        max_gauge = [float(each.max_reading), float(each.mcl)]
-        fig = go.Figure(go.Indicator(
-            domain = {'x': [0, 1], 'y': [0, 1]},
-            value = float(each.max_reading),
-            mode = "gauge+number",
-            title = {'text': "Contaminant Reading"},
-            gauge = {'axis': {'range': [None, max(max_gauge)]},
-                    'steps' : [
-                        {'range': [float(each.mclg), float(f'{each.mcl if each.mcl else each.mclg}')], 'color': "lightgray"},
-                        {'range': [float(f'{each.mcl if each.mcl else each.mclg}'), max(max_gauge)], 'color': 'lightgray'}
-                        ],
-                    'threshold' : {'line': {'color': "red", 'width': 6}, 'thickness': 0.8, 'value': float(each.mclg)}}))
-        return fig
-
-
-
-    count = 1
-    pfas = '(Forever Chemicals)'
-    for each in primary_cont[:5]:
-        with st.expander(f"**{count}. {each.contaminant}** {pfas if each.contaminant.name in ['PFOS', 'PFOA'] else ''}"):
-            fig = gauge(each)
-            st.plotly_chart(fig, use_container_width=True)
-            
-            col1, col2, col3 = st.columns(3)
-            with col1:
-                st.metric(label="Highest Level Detected", value=f"{each.max_reading if each.max_reading else each.perc} {each.contaminant.units}", delta=f"{'{:,.2f}'.format(float(each.factor))}x", delta_color='inverse')
-            with col2:
-                st.metric(label='EPA Health Goal', value=f'{each.mclg} {each.contaminant.units}', help='Level of a contaminant in drinking water below which there is no known or expected health risk')
-            with col3:
-                na = 'NA'
-                empty= ''
-                st.metric(label='Minimum Contaminant Level', value=f'{each.mcl if each.mcl else na} {each.contaminant.units if each.mcl else empty}', help='Level of a contaminant that Water Utilities cannot exceed')
-            
-
-            st.markdown(vert_space, unsafe_allow_html=True)
-            annotated_text(('Source', f'{each.contaminant}','rgba(28, 131, 225, .33)'))
-            st.write(f"{each.contaminant.source}")
-            
-            st.markdown(vert_space, unsafe_allow_html=True)
-            annotated_text(('Health Risk', f'{each.contaminant}','rgba(28, 131, 225, .33)'))
-            st.write(f"{each.contaminant.risk}")
-            
-
-            count += 1
-            st.markdown(vert_space, unsafe_allow_html=True)
-
-
-
-    
-    placeholder = st.empty()
-
-    if placeholder.button('More...'):
-        with placeholder.container():
-            count = 6
-            pfas = '(Forever Chemicals)'
-            for each in primary_cont[5:]:
-                with st.expander(f"**{count}. {each.contaminant}** {pfas if each.contaminant.name in ['PFOS', 'PFOA'] else ''}"):
-                    fig = gauge(each)
-                    st.plotly_chart(fig, use_container_width=True)
-                    
-                    col1, col2, col3 = st.columns(3)
-                    with col1:
-                        st.metric(label="Highest Level Detected", value=f"{each.max_reading if each.max_reading else each.perc} {each.contaminant.units}", delta=f"{'{:,.2f}'.format(float(each.factor))}x", delta_color='inverse')
-                    with col2:
-                        st.metric(label='EPA Health Goal', value=f'{each.mclg} {each.contaminant.units}', help='Level of a contaminant in drinking water below which there is no known or expected health risk')
-                    with col3:
-                        na = 'NA'
-                        empty= ''
-                        st.metric(label='Minimum Contaminant Level', value=f'{each.mcl if each.mcl else na} {each.contaminant.units if each.mcl else empty}', help='Level of a contaminant that Water Utilities cannot exceed')
-                    
-                    
-
-                    st.markdown(vert_space, unsafe_allow_html=True)
-                    annotated_text(('Source', f'{each.contaminant}','rgba(28, 131, 225, .33)'))
-                    st.write(f"{each.contaminant.source}")
-                    
-                    st.markdown(vert_space, unsafe_allow_html=True)
-                    annotated_text(('Health Risk', f'{each.contaminant}','rgba(28, 131, 225, .33)'))
-                    st.write(f"{each.contaminant.risk}")
-                    
-                    count += 1
-                    st.markdown(vert_space, unsafe_allow_html=True)
-
-    '---'
-    # Water Supply
-    st.subheader('Water Supply')
-    st.write(f'{wutility.supply}')
-
-    # Treatment Process
-    st.subheader('Treatment Process')
-    st.write(f'{wutility.treatment}')
-
+        # Treatment Process
+        st.subheader('Treatment Process')
+        st.write(f'{wutility.treatment}')
 
 else:
     hero_message = "<p style='text-align: center; font-family: Source Sans Pro, sans-serif; color:Gray;'>The most <b>up-to-date</b> information you can find about your home's tap water.</p>"
