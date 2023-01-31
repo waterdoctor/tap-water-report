@@ -117,7 +117,7 @@ if city_state_zip:
                 domain = {'x': [0, 1], 'y': [0, 1]},
                 value = float(each.max_reading),
                 mode = "gauge+number",
-                title = {'text': "Contaminant Reading"},
+                title = {'text': f"Contaminant Reading for *{each.contaminant.name}*"},
                 gauge = {'axis': {'range': [None, max(max_gauge)]},
                         'steps' : [
                             {'range': [float(each.mclg), float(f'{each.mcl if each.mcl else each.mclg}')], 'color': "lightgray"},
@@ -200,7 +200,7 @@ if city_state_zip:
     
     with tab2:
         st.header('Additional Information')
-        
+
         # Water Supply
         st.subheader('Water Supply')
         st.write(f'{wutility.supply}')
