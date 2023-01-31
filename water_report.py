@@ -78,7 +78,7 @@ if city_state_zip:
         st.title('Tap Water Report (2021)')
         colored_header(
             label=f'*{city_state_zip}*',
-            description=f'Data was sourced from the most recent Consumer Confidence Report (CCR) published by **{wutility.name}** on June 2022.',
+            description=f'Data was sourced from the most recent Consumer Confidence Report (CCR) published by :blue[{wutility.name}] on June 2022.',
             color_name='blue-70'
         )
         '---'
