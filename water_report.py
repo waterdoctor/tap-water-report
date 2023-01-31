@@ -98,8 +98,8 @@ if city_state_zip:
             
             '''
         )
-        st.caption(':black[TDS]. A measure of how much solid particles (dirt, sand, minerals, bacteria, etc.) are present in the water.')
-        st.caption(':black[Hardness]. A measure of how much Magnesium and Calcium are present in the water. The white residue or spots that you see on your glassware is from hard water.')
+        st.caption(':blue[TDS] A measure of how much solid particles (dirt, sand, minerals, bacteria, etc.) are present in the water.')
+        st.caption(':blue[Hardness] A measure of how much Magnesium and Calcium are present in the water. The white residue or spots that you see on your glassware is from hard water.')
         
         '---'
 
@@ -195,8 +195,8 @@ if city_state_zip:
 
         '---'
         
-        st.caption(":black[Minimum Contaminant Level Goal (MCLG)]. A measure set by the EPA based on health effects data, it's the maximum level of a contaminant in drinking water at which no known or anticipated adverse effect on the health of persons would occur, allowing an adequate margin of safety. Note: _MCLG_ and _MRDLG (Minimum Residual Disinfectant Level Goal)_ is used interchangeably in this report.")
-        st.caption(":black[Minimum Contaminant Level (MCL)]. The maximum level allowed of a contaminant in water which is delivered to any user of a public water system strictly based on technical feasibility of treatment. Note: _MCL_ and _MRDL (Minimum Residual Disinfectant Level)_ is used interchangeably in this report.")
+        st.caption(":blue[Minimum Contaminant Level Goal (MCLG)] A measure set by the EPA based on health effects data, it's the maximum level of a contaminant in drinking water at which no known or anticipated adverse effect on the health of persons would occur, allowing an adequate margin of safety. Note: _MCLG_ and _MRDLG (Minimum Residual Disinfectant Level Goal)_ is used interchangeably in this report.")
+        st.caption(":blue[Minimum Contaminant Level (MCL)] The maximum level allowed of a contaminant in water which is delivered to any user of a public water system strictly based on technical feasibility of treatment. Note: _MCL_ and _MRDL (Minimum Residual Disinfectant Level)_ is used interchangeably in this report.")
         
     
     with tab2:
