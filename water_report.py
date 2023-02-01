@@ -50,15 +50,7 @@ st.set_page_config(
 # -------------------------------- APP --------------------------------
 
 
-# -------- SIDEBAR --------
-#with st.sidebar:
-    #st.image(logo)
-    
-    
-
-
-# -------- MAIN --------
-# TODO: Replace hard-coded values with variables from the database
+# -------- WATER REPORT --------
 st.markdown(centered_logo, unsafe_allow_html=True)
 st.markdown(vert_space, unsafe_allow_html=True)
 
@@ -104,7 +96,7 @@ if city_state_zip:
         '---'
 
 
-        # Top 5 Contaminants Found in Your Water
+        # -------- TOP 5 CONTAMINANTS --------
         st.header('Top 5 Contaminants Found in Your Water')
 
         def gauge(each):
@@ -160,7 +152,7 @@ if city_state_zip:
 
         
         placeholder = st.empty()
-
+        # -------- SHOW REST OF THE LIST --------
         if placeholder.button('More...'):
             with placeholder.container():
                 count = 6
@@ -198,7 +190,7 @@ if city_state_zip:
         st.caption(":blue[Minimum Contaminant Level Goal (MCLG)] A measure set by the EPA based on health effects data, it's the maximum level of a contaminant in drinking water at which no known or anticipated adverse effect on the health of persons would occur, allowing an adequate margin of safety. Note: _MCLG_ and _MRDLG (Minimum Residual Disinfectant Level Goal)_ is used interchangeably in this report.")
         st.caption(":blue[Minimum Contaminant Level (MCL)] The maximum level allowed of a contaminant in water which is delivered to any user of a public water system strictly based on technical feasibility of treatment. Note: _MCL_ and _MRDL (Minimum Residual Disinfectant Level)_ is used interchangeably in this report.")
         
-    
+    # -------- ADDITIONAL INFO --------
     with tab2:
         st.header('Additional Information')
 
@@ -210,6 +202,7 @@ if city_state_zip:
         st.subheader('Treatment Process')
         st.write(f'{wutility.treatment}')
 
+# -------- LANDING PAGE --------
 else:
     hero_message = "<p style='text-align: center; font-family: Source Sans Pro, sans-serif; color:Gray;'>The most <b>up-to-date</b> information you can find about your home's tap water.</p>"
     st.markdown(hero_message, unsafe_allow_html=True)
