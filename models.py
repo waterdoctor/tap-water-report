@@ -20,6 +20,8 @@ class WaterUtility:
     treatment: str
     territory: list[str]
     last_updated: int
+    pdf: str
+    publish: str
 
 
     def __repr__(self):
