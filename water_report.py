@@ -21,7 +21,7 @@ def img_to_bytes(img_path):
     return encoded
 
 def img_to_html(img_path):
-    img_html = "<img src='data:image/png;base64,{}' width='50' class='img-fluid'>".format(
+    img_html = "<a href='https://waterdoctorusa.com'><img src='data:image/png;base64,{}' width='50' class='img-fluid'></a>".format(
       img_to_bytes(img_path)
     )
     return img_html
