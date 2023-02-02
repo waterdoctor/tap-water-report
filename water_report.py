@@ -97,7 +97,7 @@ def get_contaminants(cont_list, count=1):
             count += 1
             st.markdown(vert_space, unsafe_allow_html=True)
 
-@st.experimental_memo
+
 def get_secondary_cont(secondary_cont):
     # TODO: Also a clear label whether it's good, okay, or bad. Maybe a 5-star rating based on relative performance? or absolute performance?
     # TODO: Other secondary contaminants that have aesthetic effects on water
