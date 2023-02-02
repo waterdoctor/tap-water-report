@@ -63,7 +63,6 @@ def get_contaminants(cont_list, count=1):
                 empty= ''
                 st.metric(label='Minimum Contaminant Level', value=f'{each.mcl if each.mcl else na} {each.contaminant.units if each.mcl else empty}', help='Level of a contaminant that Water Utilities cannot exceed')
             
-
             st.markdown(vert_space, unsafe_allow_html=True)
             annotated_text(('Source', f'{each.contaminant}','rgba(28, 131, 225, .33)'))
             st.write(f"{each.contaminant.source}")
@@ -72,10 +71,25 @@ def get_contaminants(cont_list, count=1):
             annotated_text(('Health Risk', f'{each.contaminant}','rgba(28, 131, 225, .33)'))
             st.write(f"{each.contaminant.risk}")
             
-
             count += 1
             st.markdown(vert_space, unsafe_allow_html=True)
 
+def gauge(each):
+    each.max_reading = each.max_reading if each.max_reading else each.perc
+    each.mcl = each.mcl if each.mcl else each.mclg
+    max_gauge = [float(each.max_reading), float(each.mcl)]
+    fig = go.Figure(go.Indicator(
+        domain = {'x': [0, 1], 'y': [0, 1]},
+        value = float(each.max_reading),
+        mode = "gauge+number",
+        title = {'text': f"Contaminant Reading for {each.contaminant.name}"},
+        gauge = {'axis': {'range': [None, max(max_gauge)]},
+                'steps' : [
+                    {'range': [float(each.mclg), float(f'{each.mcl if each.mcl else each.mclg}')], 'color': "lightgray"},
+                    {'range': [float(f'{each.mcl if each.mcl else each.mclg}'), max(max_gauge)], 'color': 'lightgray'}
+                    ],
+                'threshold' : {'line': {'color': "red", 'width': 6}, 'thickness': 0.8, 'value': float(each.mclg)}}))
+    return fig
 
 # -------------------------------- APP --------------------------------
 
@@ -130,23 +144,6 @@ if city_state_zip:
 
         # -------- TOP 5 CONTAMINANTS --------
         st.header('Top 5 Contaminants Found in Your Water')
-        
-        def gauge(each):
-            each.max_reading = each.max_reading if each.max_reading else each.perc
-            each.mcl = each.mcl if each.mcl else each.mclg
-            max_gauge = [float(each.max_reading), float(each.mcl)]
-            fig = go.Figure(go.Indicator(
-                domain = {'x': [0, 1], 'y': [0, 1]},
-                value = float(each.max_reading),
-                mode = "gauge+number",
-                title = {'text': f"Contaminant Reading for {each.contaminant.name}"},
-                gauge = {'axis': {'range': [None, max(max_gauge)]},
-                        'steps' : [
-                            {'range': [float(each.mclg), float(f'{each.mcl if each.mcl else each.mclg}')], 'color': "lightgray"},
-                            {'range': [float(f'{each.mcl if each.mcl else each.mclg}'), max(max_gauge)], 'color': 'lightgray'}
-                            ],
-                        'threshold' : {'line': {'color': "red", 'width': 6}, 'thickness': 0.8, 'value': float(each.mclg)}}))
-            return fig
 
         get_contaminants(primary_cont[:5])
         
