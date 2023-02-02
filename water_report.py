@@ -74,6 +74,8 @@ if city_state_zip:
             color_name='blue-70'
         )
         '---'
+        # TODO: Instead of color formatting delta of value (except for change yoy), use conditional color formatting for values
+        # TODO: Also a clear label whether it's good, okay, or bad. Maybe a 5-star rating based on relative performance? or absolute performance?
         st.subheader('Water Aesthetics')
         col1, col2, col3 = st.columns(3)
         with col1:
@@ -93,6 +95,7 @@ if city_state_zip:
         st.caption(':blue[TDS] A measure of how much solid particles (dirt, sand, minerals, bacteria, etc.) are present in the water.')
         st.caption(':blue[Hardness] A measure of how much Magnesium and Calcium are present in the water. The white residue or spots that you see on your glassware is from hard water.')
         
+        # TODO: Other secondary contaminants that have aesthetic effects on water
         '---'
 
 
@@ -195,11 +198,11 @@ if city_state_zip:
         st.header('Additional Information')
 
         # Water Supply
-        st.subheader('Water Supply')
+        st.subheader('Where does your water come from?')
         st.write(f'{wutility.supply}')
 
         # Treatment Process
-        st.subheader('Treatment Process')
+        st.subheader('How your water is treated.')
         st.write(f'{wutility.treatment}')
 
 # -------- LANDING PAGE --------
