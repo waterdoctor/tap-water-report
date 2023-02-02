@@ -181,5 +181,5 @@ if city_state_zip:
 else:
     hero_message = "<p style='text-align: center; font-family: Source Sans Pro, sans-serif; color:Gray;'>The most <b>up-to-date</b> information you can find about your home's tap water.</p>"
     st.markdown(hero_message, unsafe_allow_html=True)
-    #st_lottie(lottie)
+    st_lottie(lottie)
 
