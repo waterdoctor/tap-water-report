@@ -47,23 +47,23 @@ st.set_page_config(
 
 # ----------------------------- FUNCTIONS -----------------------------
 @st.experimental_memo
-def gauge(each):
-    '''Gauge plot'''
-    each.max_reading = each.max_reading if each.max_reading else each.perc
-    each.mcl = each.mcl if each.mcl else each.mclg
-    max_gauge = [float(each.max_reading), float(each.mcl)]
-    fig = go.Figure(go.Indicator(
-        domain = {'x': [0, 1], 'y': [0, 1]},
-        value = float(each.max_reading),
-        mode = "gauge+number",
-        title = {'text': f"Contaminant Reading for {each.contaminant.name}"},
-        gauge = {'axis': {'range': [None, max(max_gauge)]},
-                'steps' : [
-                    {'range': [float(each.mclg), float(f'{each.mcl if each.mcl else each.mclg}')], 'color': "lightgray"},
-                    {'range': [float(f'{each.mcl if each.mcl else each.mclg}'), max(max_gauge)], 'color': 'lightgray'}
-                    ],
-                'threshold' : {'line': {'color': "red", 'width': 6}, 'thickness': 0.8, 'value': float(each.mclg)}}))
-    return fig
+    def gauge(each):
+        '''Gauge plot'''
+        each.max_reading = each.max_reading if each.max_reading else each.perc
+        each.mcl = each.mcl if each.mcl else each.mclg
+        max_gauge = [float(each.max_reading), float(each.mcl)]
+        fig = go.Figure(go.Indicator(
+            domain = {'x': [0, 1], 'y': [0, 1]},
+            value = float(each.max_reading),
+            mode = "gauge+number",
+            title = {'text': f"Contaminant Reading for {each.contaminant.name}"},
+            gauge = {'axis': {'range': [None, max(max_gauge)]},
+                    'steps' : [
+                        {'range': [float(each.mclg), float(f'{each.mcl if each.mcl else each.mclg}')], 'color': "lightgray"},
+                        {'range': [float(f'{each.mcl if each.mcl else each.mclg}'), max(max_gauge)], 'color': 'lightgray'}
+                        ],
+                    'threshold' : {'line': {'color': "red", 'width': 6}, 'thickness': 0.8, 'value': float(each.mclg)}}))
+        return fig
 
 @st.experimental_memo
 def get_contaminants(cont_list, count=1):
@@ -97,7 +97,7 @@ def get_contaminants(cont_list, count=1):
             count += 1
             st.markdown(vert_space, unsafe_allow_html=True)
 
-
+@st.experimental_memo
 def get_secondary_cont(secondary_cont):
     # TODO: Also a clear label whether it's good, okay, or bad. Maybe a 5-star rating based on relative performance? or absolute performance?
     # TODO: Other secondary contaminants that have aesthetic effects on water
@@ -181,5 +181,4 @@ if city_state_zip:
 else:
     hero_message = "<p style='text-align: center; font-family: Source Sans Pro, sans-serif; color:Gray;'>The most <b>up-to-date</b> information you can find about your home's tap water.</p>"
     st.markdown(hero_message, unsafe_allow_html=True)
-    st_lottie(lottie)
-
+    #st_lottie(lottie)
