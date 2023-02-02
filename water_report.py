@@ -47,34 +47,34 @@ st.set_page_config(
 @st.experimental_memo
 def get_contaminants(cont_list):
     count = 1
-        pfas = '(Forever Chemicals)'
-        for each in cont_list:
-            with st.expander(f"**{count}. {each.contaminant}** {pfas if each.contaminant.name in ['PFOS', 'PFOA'] else ''}"):
-                fig = gauge(each)
-                st.plotly_chart(fig, use_container_width=True)
-                
-                col1, col2, col3 = st.columns(3)
-                with col1:
-                    st.metric(label="Highest Level Detected", value=f"{each.max_reading if each.max_reading else each.perc} {each.contaminant.units}", delta=f"{'{:,.2f}'.format(float(each.factor))}x", delta_color='inverse')
-                with col2:
-                    st.metric(label='EPA Health Goal', value=f'{each.mclg} {each.contaminant.units}', help='Level of a contaminant in drinking water below which there is no known or expected health risk')
-                with col3:
-                    na = 'NA'
-                    empty= ''
-                    st.metric(label='Minimum Contaminant Level', value=f'{each.mcl if each.mcl else na} {each.contaminant.units if each.mcl else empty}', help='Level of a contaminant that Water Utilities cannot exceed')
-                
+    pfas = '(Forever Chemicals)'
+    for each in cont_list:
+        with st.expander(f"**{count}. {each.contaminant}** {pfas if each.contaminant.name in ['PFOS', 'PFOA'] else ''}"):
+            fig = gauge(each)
+            st.plotly_chart(fig, use_container_width=True)
+            
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.metric(label="Highest Level Detected", value=f"{each.max_reading if each.max_reading else each.perc} {each.contaminant.units}", delta=f"{'{:,.2f}'.format(float(each.factor))}x", delta_color='inverse')
+            with col2:
+                st.metric(label='EPA Health Goal', value=f'{each.mclg} {each.contaminant.units}', help='Level of a contaminant in drinking water below which there is no known or expected health risk')
+            with col3:
+                na = 'NA'
+                empty= ''
+                st.metric(label='Minimum Contaminant Level', value=f'{each.mcl if each.mcl else na} {each.contaminant.units if each.mcl else empty}', help='Level of a contaminant that Water Utilities cannot exceed')
+            
 
-                st.markdown(vert_space, unsafe_allow_html=True)
-                annotated_text(('Source', f'{each.contaminant}','rgba(28, 131, 225, .33)'))
-                st.write(f"{each.contaminant.source}")
-                
-                st.markdown(vert_space, unsafe_allow_html=True)
-                annotated_text(('Health Risk', f'{each.contaminant}','rgba(28, 131, 225, .33)'))
-                st.write(f"{each.contaminant.risk}")
-                
+            st.markdown(vert_space, unsafe_allow_html=True)
+            annotated_text(('Source', f'{each.contaminant}','rgba(28, 131, 225, .33)'))
+            st.write(f"{each.contaminant.source}")
+            
+            st.markdown(vert_space, unsafe_allow_html=True)
+            annotated_text(('Health Risk', f'{each.contaminant}','rgba(28, 131, 225, .33)'))
+            st.write(f"{each.contaminant.risk}")
+            
 
-                count += 1
-                st.markdown(vert_space, unsafe_allow_html=True)
+            count += 1
+            st.markdown(vert_space, unsafe_allow_html=True)
 
 
 # -------------------------------- APP --------------------------------
