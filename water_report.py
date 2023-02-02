@@ -47,23 +47,23 @@ st.set_page_config(
 
 # ----------------------------- FUNCTIONS -----------------------------
 @st.experimental_memo
-    def gauge(each):
-        '''Gauge plot'''
-        each.max_reading = each.max_reading if each.max_reading else each.perc
-        each.mcl = each.mcl if each.mcl else each.mclg
-        max_gauge = [float(each.max_reading), float(each.mcl)]
-        fig = go.Figure(go.Indicator(
-            domain = {'x': [0, 1], 'y': [0, 1]},
-            value = float(each.max_reading),
-            mode = "gauge+number",
-            title = {'text': f"Contaminant Reading for {each.contaminant.name}"},
-            gauge = {'axis': {'range': [None, max(max_gauge)]},
-                    'steps' : [
-                        {'range': [float(each.mclg), float(f'{each.mcl if each.mcl else each.mclg}')], 'color': "lightgray"},
-                        {'range': [float(f'{each.mcl if each.mcl else each.mclg}'), max(max_gauge)], 'color': 'lightgray'}
-                        ],
-                    'threshold' : {'line': {'color': "red", 'width': 6}, 'thickness': 0.8, 'value': float(each.mclg)}}))
-        return fig
+def gauge(each):
+    '''Gauge plot'''
+    each.max_reading = each.max_reading if each.max_reading else each.perc
+    each.mcl = each.mcl if each.mcl else each.mclg
+    max_gauge = [float(each.max_reading), float(each.mcl)]
+    fig = go.Figure(go.Indicator(
+        domain = {'x': [0, 1], 'y': [0, 1]},
+        value = float(each.max_reading),
+        mode = "gauge+number",
+        title = {'text': f"Contaminant Reading for {each.contaminant.name}"},
+        gauge = {'axis': {'range': [None, max(max_gauge)]},
+                'steps' : [
+                    {'range': [float(each.mclg), float(f'{each.mcl if each.mcl else each.mclg}')], 'color': "lightgray"},
+                    {'range': [float(f'{each.mcl if each.mcl else each.mclg}'), max(max_gauge)], 'color': 'lightgray'}
+                    ],
+                'threshold' : {'line': {'color': "red", 'width': 6}, 'thickness': 0.8, 'value': float(each.mclg)}}))
+    return fig
 
 @st.experimental_memo
 def get_contaminants(cont_list, count=1):
