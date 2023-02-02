@@ -30,7 +30,7 @@ def local_css(file_name):
     with open(file_name) as f:
         st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-local_css("css/style.css")
+
 
 
 # -------- SETTINGS --------
@@ -55,6 +55,7 @@ def get_contaminants(cont_list, count=1):
     count = count
     pfas = '(Forever Chemicals)'
     for each in cont_list:
+        local_css("css/style.css")
         with st.expander(f"**{count}. {each.contaminant}** {pfas if each.contaminant.name in ['PFOS', 'PFOA'] else ''}"):
             fig = gauge(each)
             st.plotly_chart(fig, use_container_width=True)
