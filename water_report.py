@@ -11,12 +11,10 @@ from streamlit_extras.colored_header import colored_header
 from annotated_text import annotated_text
 from streamlit_lottie import st_lottie
 
-@st.experimental_memo
 def load_lottiefile(filepath: str):
     with open(filepath, 'r') as f:
         return json.load(f)
 
-@st.experimental_memo
 def img_to_bytes(img_path):
     img_bytes = Path(img_path).read_bytes()
     encoded = base64.b64encode(img_bytes).decode()
@@ -35,7 +33,7 @@ territories = WaterUtility.get_all()
 logo = 'https://lh4.googleusercontent.com/r_DvVzF2wmpBC3ZVQBlofpveBTkLTNPWE8RBFhQvSw571RLyf4e5i8fF6nYsnGY4mNM=w2400'
 centered_logo = "<p style='text-align: center; color: grey;'>"+img_to_html('logo/logo.png')+"</p>"
 by_wd = 'https://lh5.googleusercontent.com/V-DcILHJebKcQO9vRDkr45ALqKNYwfoutn-LOyS9Hcv1ysjetx3J7ltuQ2Ua3EEs53Q=w2400'
-lottie = load_lottiefile('lottie/water_report.json')
+#lottie = load_lottiefile('lottie/water_report.json')
 
 
 # ------- PAGE CONFIG -------
@@ -46,25 +44,6 @@ st.set_page_config(
 )
 
 # ----------------------------- FUNCTIONS -----------------------------
-@st.experimental_memo
-def gauge(each):
-    '''Gauge plot'''
-    each.max_reading = each.max_reading if each.max_reading else each.perc
-    each.mcl = each.mcl if each.mcl else each.mclg
-    max_gauge = [float(each.max_reading), float(each.mcl)]
-    fig = go.Figure(go.Indicator(
-        domain = {'x': [0, 1], 'y': [0, 1]},
-        value = float(each.max_reading),
-        mode = "gauge+number",
-        title = {'text': f"Contaminant Reading for {each.contaminant.name}"},
-        gauge = {'axis': {'range': [None, max(max_gauge)]},
-                'steps' : [
-                    {'range': [float(each.mclg), float(f'{each.mcl if each.mcl else each.mclg}')], 'color': "lightgray"},
-                    {'range': [float(f'{each.mcl if each.mcl else each.mclg}'), max(max_gauge)], 'color': 'lightgray'}
-                    ],
-                'threshold' : {'line': {'color': "red", 'width': 6}, 'thickness': 0.8, 'value': float(each.mclg)}}))
-    return fig
-
 @st.experimental_memo
 def get_contaminants(cont_list, count=1):
     count = count
@@ -97,29 +76,6 @@ def get_contaminants(cont_list, count=1):
             count += 1
             st.markdown(vert_space, unsafe_allow_html=True)
 
-@st.experimental_memo
-def get_secondary_cont(secondary_cont):
-    # TODO: Also a clear label whether it's good, okay, or bad. Maybe a 5-star rating based on relative performance? or absolute performance?
-    # TODO: Other secondary contaminants that have aesthetic effects on water
-    st.subheader('Water Aesthetics')
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        tds = secondary_cont['TDS']
-        st.metric(label='TDS', value=tds.max, delta=f'{int(tds.max)-500}', delta_color='inverse', help='Total Dissolved Solids should be below **500** as recommended by EPA')
-    with col2:
-        hardness = secondary_cont['Hardness']
-        st.metric(label='Hardness', value=hardness.max, delta=f'{int(hardness.max)-250}', delta_color='inverse', help='Hardness should be below **250** as recommended by EPA')
-    with col3:
-        ph = secondary_cont['pH']
-        st.metric(label='pH', value=ph.max, help='pH levels should be between **6.5 - 8.5** as recommended by EPA')
-    st.markdown(
-        '''
-        
-        '''
-    )
-    st.caption(':blue[TDS] A measure of how much solid particles (dirt, sand, minerals, bacteria, etc.) are present in the water.')
-    st.caption(':blue[Hardness] A measure of how much Magnesium and Calcium are present in the water. The white residue or spots that you see on your glassware is from hard water.')
-        
 
 # -------------------------------- APP --------------------------------
 
@@ -138,10 +94,9 @@ if city_state_zip:
     with tab1:
         wutility = WaterUtility.get_from_db(city_state_zip)
         readings = ContaminantReading.get_from_db(wutility)
-
+        # Get top 5 contaminants
         primary_cont = WaterUtility.get_primary(readings)
         secondary_cont = WaterUtility.get_secondary(readings)
-        
         st.title('Tap Water Report (2021)')
         colored_header(
             label=f'*{city_state_zip}*',
@@ -149,12 +104,49 @@ if city_state_zip:
             color_name='blue-70'
         )
         '---'
-        get_secondary_cont(secondary_cont)
+        # TODO: Also a clear label whether it's good, okay, or bad. Maybe a 5-star rating based on relative performance? or absolute performance?
+        st.subheader('Water Aesthetics')
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            tds = secondary_cont['TDS']
+            st.metric(label='TDS', value=tds.max, delta=f'{int(tds.max)-500}', delta_color='inverse', help='Total Dissolved Solids should be below **500** as recommended by EPA')
+        with col2:
+            hardness = secondary_cont['Hardness']
+            st.metric(label='Hardness', value=hardness.max, delta=f'{int(hardness.max)-250}', delta_color='inverse', help='Hardness should be below **250** as recommended by EPA')
+        with col3:
+            ph = secondary_cont['pH']
+            st.metric(label='pH', value=ph.max, help='pH levels should be between **6.5 - 8.5** as recommended by EPA')
+        st.markdown(
+            '''
+            
+            '''
+        )
+        st.caption(':blue[TDS] A measure of how much solid particles (dirt, sand, minerals, bacteria, etc.) are present in the water.')
+        st.caption(':blue[Hardness] A measure of how much Magnesium and Calcium are present in the water. The white residue or spots that you see on your glassware is from hard water.')
+        
+        # TODO: Other secondary contaminants that have aesthetic effects on water
         '---'
 
 
         # -------- TOP 5 CONTAMINANTS --------
         st.header('Top 5 Contaminants Found in Your Water')
+        
+        def gauge(each):
+            each.max_reading = each.max_reading if each.max_reading else each.perc
+            each.mcl = each.mcl if each.mcl else each.mclg
+            max_gauge = [float(each.max_reading), float(each.mcl)]
+            fig = go.Figure(go.Indicator(
+                domain = {'x': [0, 1], 'y': [0, 1]},
+                value = float(each.max_reading),
+                mode = "gauge+number",
+                title = {'text': f"Contaminant Reading for {each.contaminant.name}"},
+                gauge = {'axis': {'range': [None, max(max_gauge)]},
+                        'steps' : [
+                            {'range': [float(each.mclg), float(f'{each.mcl if each.mcl else each.mclg}')], 'color': "lightgray"},
+                            {'range': [float(f'{each.mcl if each.mcl else each.mclg}'), max(max_gauge)], 'color': 'lightgray'}
+                            ],
+                        'threshold' : {'line': {'color': "red", 'width': 6}, 'thickness': 0.8, 'value': float(each.mclg)}}))
+            return fig
 
         get_contaminants(primary_cont[:5])
         
