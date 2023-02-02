@@ -80,7 +80,7 @@ if city_state_zip:
         col1, col2, col3 = st.columns(3)
         with col1:
             tds = secondary_cont['TDS']
-            st.metric(label='TDS', value=tds.max, delta=f'{int(tds.max)-500}', delta_color='inverse', help='Total Dissolved Solids should be below **500** as recommended by EPA')
+            st.metric(label='TDS', value=:red[tds.max], delta=f'{int(tds.max)-500}', delta_color='inverse', help='Total Dissolved Solids should be below **500** as recommended by EPA')
         with col2:
             hardness = secondary_cont['Hardness']
             st.metric(label='Hardness', value=hardness.max, delta=f'{int(hardness.max)-250}', delta_color='inverse', help='Hardness should be below **250** as recommended by EPA')
@@ -209,6 +209,5 @@ if city_state_zip:
 else:
     hero_message = "<p style='text-align: center; font-family: Source Sans Pro, sans-serif; color:Gray;'>The most <b>up-to-date</b> information you can find about your home's tap water.</p>"
     st.markdown(hero_message, unsafe_allow_html=True)
-    st.info("Please understand if your city is unavailable, we're trying our best to add more cities.", icon="ℹ️")
     #st_lottie(lottie)
 
