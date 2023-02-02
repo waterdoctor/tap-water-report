@@ -26,6 +26,12 @@ def img_to_html(img_path):
     )
     return img_html
 
+def local_css(file_name):
+    with open(file_name) as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
+local_css("style.css")
+
 
 # -------- SETTINGS --------
 vert_space = '<div style="padding: 10px 5px;"></div>'
