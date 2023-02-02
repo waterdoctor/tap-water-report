@@ -33,7 +33,7 @@ territories = WaterUtility.get_all()
 logo = 'https://lh4.googleusercontent.com/r_DvVzF2wmpBC3ZVQBlofpveBTkLTNPWE8RBFhQvSw571RLyf4e5i8fF6nYsnGY4mNM=w2400'
 centered_logo = "<p style='text-align: center; color: grey;'>"+img_to_html('logo/logo.png')+"</p>"
 by_wd = 'https://lh5.googleusercontent.com/V-DcILHJebKcQO9vRDkr45ALqKNYwfoutn-LOyS9Hcv1ysjetx3J7ltuQ2Ua3EEs53Q=w2400'
-#lottie = load_lottiefile('lottie/water_report.json')
+lottie = load_lottiefile('lottie/water_report.json')
 
 
 # ------- PAGE CONFIG -------
@@ -170,4 +170,4 @@ if city_state_zip:
 else:
     hero_message = "<p style='text-align: center; font-family: Source Sans Pro, sans-serif; color:Gray;'>The most <b>up-to-date</b> information you can find about your home's tap water.</p>"
     st.markdown(hero_message, unsafe_allow_html=True)
-    #st_lottie(lottie)
+    st_lottie(lottie)
