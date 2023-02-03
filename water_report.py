@@ -159,7 +159,8 @@ if city_state_zip:
         if placeholder.button('More...'):
             with placeholder.container():
                 get_contaminants(primary_cont[5:], 6)
-                
+        
+        '---'
         st.caption(":blue[Minimum Contaminant Level Goal (MCLG)] A measure set by the EPA based on health effects data, it's the maximum level of a contaminant in drinking water at which no known or anticipated adverse effect on the health of persons would occur, allowing an adequate margin of safety. Note: _MCLG_ and _MRDLG (Minimum Residual Disinfectant Level Goal)_ is used interchangeably in this report.")
         st.caption(":blue[Minimum Contaminant Level (MCL)] The maximum level allowed of a contaminant in water which is delivered to any user of a public water system strictly based on technical feasibility of treatment. Note: _MCL_ and _MRDL (Minimum Residual Disinfectant Level)_ is used interchangeably in this report.")
     
