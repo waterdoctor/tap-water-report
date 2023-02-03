@@ -118,7 +118,7 @@ if city_state_zip:
         # Get top 5 contaminants
         primary_cont = WaterUtility.get_primary(readings)
         secondary_cont = WaterUtility.get_secondary(readings)
-        st.title('Tap Water Report (2021)')
+        st.title(f'Tap Water Report ({wutility.last_updated})')
         colored_header(
             label=f'*{city_state_zip}*',
             description=f'Data was sourced from the most recent Consumer Confidence Report (CCR) published by :blue[{wutility.name}] on {wutility.publish}. [Source]({wutility.pdf})',
