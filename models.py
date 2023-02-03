@@ -45,7 +45,7 @@ class WaterUtility:
     def add_to_db(self):
         pws.insert(asdict(self))
 
-    # TODO: Create a function to sort contaminants in descending order of contaminant reading relative to standard
+    # Create a function to sort contaminants in descending order of contaminant reading relative to standard
     def get_primary(readings: list):
         '''Rankings only with "Primary" contaminants'''
         primary_lst = Primary.create_primary_list(readings)
@@ -56,7 +56,7 @@ class WaterUtility:
         return secondary_dict
 
 
-    # TODO: Create a staticmethod to return WaterUtility object by territory
+    # Create a staticmethod to return WaterUtility object by territory
     @staticmethod
     @st.experimental_memo
     def get_from_db(territory: str):
@@ -108,7 +108,7 @@ class Contaminant:
         elif self.units == 'ppm': full_name = 'parts per million'
         return f'{full_name} ({self.units})'
 
-    # TODO: Create a staticmethod to return Contaminant object by name
+    # Create a staticmethod to return Contaminant object by name
     @staticmethod
     @st.experimental_memo
     def get_from_db(ctmnt: str):
@@ -137,14 +137,14 @@ class ContaminantReading:
     violation: Optional[int] = np.nan
     sample_num: Optional[int] = np.nan
 
-    # TODO: Create a staticmethod to return ContaminantReading object by WaterUtility
+    # Create a staticmethod to return ContaminantReading object by WaterUtility
 
     def add_to_db(self):
         cr = asdict(self)
         readings.insert(cr)
     
     
-    # TODO: Get a list of ContaminantReading dicts from database
+    # Get a list of ContaminantReading dicts from database
     @staticmethod
     @st.experimental_memo
     def get_from_db(wutility: WaterUtility) -> list[dict]:

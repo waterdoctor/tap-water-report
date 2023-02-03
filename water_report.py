@@ -57,8 +57,8 @@ def get_contaminants(cont_list, count=1):
     for each in cont_list:
         local_css("css/style.css")
         with st.expander(f"**{count}. {each.contaminant}** {pfas if each.contaminant.name in ['PFOS', 'PFOA'] else ''}"):
-            fig = gauge(each)
-            st.plotly_chart(fig, use_container_width=True)
+            #fig = gauge(each)
+            #st.plotly_chart(fig, use_container_width=True)
             
             col1, col2, col3 = st.columns(3)
             with col1:
