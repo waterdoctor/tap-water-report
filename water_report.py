@@ -81,10 +81,9 @@ def get_contaminants(cont_list, count=1):
             st.markdown(vert_space, unsafe_allow_html=True)
             annotated_text(('Recommended Filtration Method', f'{each.contaminant}','rgba(28, 131, 225, .33)'))
             filter_list = each.contaminant.get_filter_rec()
-            st.write(
-                filter_list
-            )
 
+            for f in filter_list:
+                st.markdown(f'- {f}')
             count += 1
             st.markdown(vert_space, unsafe_allow_html=True)
 
