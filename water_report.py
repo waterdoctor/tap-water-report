@@ -71,13 +71,20 @@ def get_contaminants(cont_list, count=1):
                 st.metric(label='Minimum Contaminant Level', value=f'{each.mcl if each.mcl else na} {each.contaminant.units if each.mcl else empty}', help='Level of a contaminant that Water Utilities cannot exceed')
             
             st.markdown(vert_space, unsafe_allow_html=True)
-            annotated_text(('Source', f'{each.contaminant}','rgba(28, 131, 225, .33)'))
+            annotated_text(('Likely Sources', f'{each.contaminant}','rgba(28, 131, 225, .33)'))
             st.write(f"{each.contaminant.source}")
             
             st.markdown(vert_space, unsafe_allow_html=True)
-            annotated_text(('Health Risk', f'{each.contaminant}','rgba(28, 131, 225, .33)'))
+            annotated_text(('Health Risks', f'{each.contaminant}','rgba(28, 131, 225, .33)'))
             st.write(f"{each.contaminant.risk}")
             
+            st.markdown(vert_space, unsafe_allow_html=True)
+            annotated_text(('Recommended Filtration Method', f'{each.contaminant}','rgba(28, 131, 225, .33)'))
+            filter_list = each.contaminant.get_filter_rec()
+            st.write(
+                filter_list
+            )
+
             count += 1
             st.markdown(vert_space, unsafe_allow_html=True)
 
@@ -119,7 +126,7 @@ if city_state_zip:
         description=f'Data was sourced from the most recent Consumer Confidence Report (CCR) published by :blue[{wutility.name}] on {wutility.publish}. [Source]({wutility.pdf})',
         color_name='blue-70'
     )
-    tab1, tab2 = st.tabs(['Report', 'More Info'])
+    tab1, tab2, tab3 = st.tabs(['Report', 'More Info', 'Recommendation'])
 
     with tab1:
         readings = ContaminantReading.get_from_db(wutility)
@@ -176,9 +183,12 @@ if city_state_zip:
         # Treatment Process
         st.subheader('How your water is treated.')
         st.write(f'{wutility.treatment}')
+    
+    with tab3:
+        st.subheader('Recommendations')
 
 # -------- LANDING PAGE --------
 else:
-    hero_message = "<p style='text-align: center; font-family: Source Sans Pro, sans-serif; color:Gray;'>The most <b>up-to-date</b> information you can find about your home's tap water.</p>"
+    hero_message = "<p style='text-align: center; font-family: Source Sans Pro, sans-serif; color:Gray;'>Get the most <b>up-to-date</b> information about your home's tap water.</p>"
     st.markdown(hero_message, unsafe_allow_html=True)
     st_lottie(lottie)

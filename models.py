@@ -72,6 +72,9 @@ class Contaminant:
     standard: str
     type: str
     units: str
+    AC: Optional[bool] = False
+    RO: Optional[bool] = False
+    Ion: Optional[bool] = False
     mclg: Optional[float] = np.nan
     mcl: Optional[float] = np.nan
     risk: Optional[str] = None
@@ -81,6 +84,15 @@ class Contaminant:
 
     def __repr__(self):
         return self.name
+
+    # Returns a short summary of what filtration method is recommended
+    def get_filter_rec(self):
+        rec_list = []
+        if self.RO: rec_list.append('Reverse Osmosis filtration')
+        if self.AC: rec_list.append('Activated Carbon filtration')
+        if self.Ion: rec_list.append('Ion Exchange')
+        return rec_list
+
 
     # Get all contaminant names
     def get_all() -> list[str]:
