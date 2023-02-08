@@ -62,7 +62,7 @@ def get_contaminants(cont_list, count=1):
             
             col1, col2, col3 = st.columns(3)
             with col1:
-                st.metric(label="Highest Level Detected", value=f"{each.max_reading if each.max_reading else each.perc} {each.contaminant.units}", delta=f"{'{:,.2f}'.format(float(each.factor))}x", delta_color='inverse')
+                st.metric(label=":red[Highest Level Detected]", value=f"{each.max_reading if each.max_reading else each.perc} {each.contaminant.units}", delta=f"{'{:,.2f}'.format(float(each.factor))}x", delta_color='inverse')
             with col2:
                 st.metric(label='EPA Health Goal', value=f'{each.mclg} {each.contaminant.units}', help='Level of a contaminant in drinking water below which there is no known or expected health risk')
             with col3:
@@ -111,20 +111,22 @@ st.markdown(vert_space, unsafe_allow_html=True)
 city_state_zip = st.selectbox('Enter your Zipcode', territories, label_visibility='collapsed')
 
 if city_state_zip:
+    
+    wutility = WaterUtility.get_from_db(city_state_zip)
+    st.title(f'Tap Water Report ({wutility.last_updated})')
+    colored_header(
+        label=f'*{city_state_zip}*',
+        description=f'Data was sourced from the most recent Consumer Confidence Report (CCR) published by :blue[{wutility.name}] on {wutility.publish}. [Source]({wutility.pdf})',
+        color_name='blue-70'
+    )
     tab1, tab2 = st.tabs(['Report', 'More Info'])
+
     with tab1:
-        wutility = WaterUtility.get_from_db(city_state_zip)
         readings = ContaminantReading.get_from_db(wutility)
         # Get top 5 contaminants
         primary_cont = WaterUtility.get_primary(readings)
         secondary_cont = WaterUtility.get_secondary(readings)
-        st.title(f'Tap Water Report ({wutility.last_updated})')
-        colored_header(
-            label=f'*{city_state_zip}*',
-            description=f'Data was sourced from the most recent Consumer Confidence Report (CCR) published by :blue[{wutility.name}] on {wutility.publish}. [Source]({wutility.pdf})',
-            color_name='blue-70'
-        )
-        '---'
+        
         # TODO: Also a clear label whether it's good, okay, or bad. Maybe a 5-star rating based on relative performance? or absolute performance?
         st.subheader('Water Aesthetics')
         col1, col2, col3 = st.columns(3)
@@ -166,7 +168,6 @@ if city_state_zip:
     
     # -------- ADDITIONAL INFO --------
     with tab2:
-        st.header('Additional Information')
 
         # Water Supply
         st.subheader('Where does your water come from?')
