@@ -253,7 +253,7 @@ if city_state_zip:
                 """
             )
         with st.expander('**Where can I find more information about my drinking water and regulations?**'):
-            st.markdown/(
+            st.markdown(
                 f"""
                 While there are many resources online, we highly recommend EPA's resources on drinking water, which can be found [here]({'https://www.epa.gov/ground-water-and-drinking-water'})
                 """
