@@ -224,7 +224,7 @@ if city_state_zip:
                 """
             )
             st.info(
-                """While water utilities focus on MCLs, individuals should pay attention to health standards especially those with infants, mothers, and the elderly.""",
+                """While water utilities focus on MCLs, individuals should pay attention to health standards especially those with severely compromised immune systems, infants, mothers, and the elderly.""",
                 icon='🧐'
             )
 
@@ -245,11 +245,17 @@ if city_state_zip:
         with st.expander('**What should I do about this?**'):
             st.markdown(
                 """
-                The best we can do is to minimize our exposure to contaminants, especially from forever chemicals found in water and everyday products such as food packaging, sunscreens, stain-resistant carpeting, firefighting foams, and non-stick cooking pans.
+                The best we can do is to minimize our exposure to contaminants.
                 The most impactful way to do this is minimizing exposure from your **daily** drinking water.
                 Research and browse through the contaminants that exceed health standards and get a water filter suited to protect you from that.
 
                 Our personal recommendation is to get a **reverse osmosis** water filtration as that is the most effective and provides protection to more contaminants that other filters cannot.
+                """
+            )
+        with st.expander('**Where can I find more information about my drinking water and regulations?**'):
+            st.markdown/(
+                f"""
+                While there are many resources online, we highly recommend EPA's resources on drinking water, which can be found [here]({'https://www.epa.gov/ground-water-and-drinking-water'})
                 """
             )
         
