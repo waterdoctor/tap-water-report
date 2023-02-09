@@ -58,7 +58,6 @@ def get_contaminants(cont_list, count=1):
         with st.expander(f"**{count}. {each.contaminant}** {pfas if each.contaminant.name in ['PFOS', 'PFOA'] else ''}"):
             #fig = gauge(each)
             #st.plotly_chart(fig, use_container_width=True)
-            completion.progress(count/5)
 
             col1, col2, col3 = st.columns(3)
             with col1:
@@ -116,8 +115,6 @@ main_title = '<h1 style="text-align:center">Enter your zipcode</h1>'
 st.markdown(main_title, unsafe_allow_html=True)
 st.markdown(vert_space, unsafe_allow_html=True)
 city_state_zip = st.selectbox('Enter your Zipcode', territories, label_visibility='collapsed')
-
-completion = st.progress(0.0)
 
 if city_state_zip:
     

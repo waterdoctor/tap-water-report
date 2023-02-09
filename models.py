@@ -174,7 +174,11 @@ class ContaminantReading:
     def get_from_db(wutility: WaterUtility) -> list[dict]:
         cr_list = []
         creadings = readings.fetch({'origin': wutility.pwsid, 'year': wutility.last_updated-1}).items
+        completion = st.progress(0.0)
+        count = 1
         for cr in creadings:
+            completion.progress(count/len(creadings))
+            count +=1
             cr.pop('key')
             cr_obj = ContaminantReading(**cr)
             cont_obj = Contaminant.get_from_db(cr_obj.contaminant)
