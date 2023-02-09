@@ -125,7 +125,7 @@ if city_state_zip:
         description=f'Data was sourced from the most recent Consumer Confidence Report (CCR) published by :blue[{wutility.name}] on {wutility.publish}. [Source]({wutility.pdf})',
         color_name='blue-70'
     )
-    tab1, tab2, tab3 = st.tabs(['Report', 'More Info', 'Recommendation'])
+    tab1, tab2, tab3 = st.tabs(['Report', 'More Info', 'FAQs'])
 
     with tab1:
         readings = ContaminantReading.get_from_db(wutility)
@@ -159,7 +159,13 @@ if city_state_zip:
 
         # -------- TOP 5 CONTAMINANTS --------
         st.header('Top 5 Contaminants Found in Your Water')
-
+        st.info(
+            """
+            The contaminants listed here is only a handful of contaminants found in your water.
+            There's many more that go untested.
+            """,
+            icon='👀'
+        )
         get_contaminants(primary_cont[:5])
         
         placeholder = st.empty()
@@ -175,8 +181,10 @@ if city_state_zip:
     # -------- ADDITIONAL INFO --------
     with tab2:
 
+        # two pie charts of contaminants exceeding health standards and mcl
+        
         # Water Supply
-        st.subheader('Where does your water come from?')
+        st.header('Where does your water come from?')
         st.write(f'{wutility.supply}')
 
         # Treatment Process
@@ -184,10 +192,51 @@ if city_state_zip:
         st.write(f'{wutility.treatment}')
     
     with tab3:
-        st.subheader('Recommendations')
+        st.header('Frequently Asked Questions')
+        with st.expander('**What is the difference between a Health Goal vs. Minimum Contaminant Level?**'):
+            st.markdown(
+                """
+                Public health goal (PHG) and minimum contaminant level (MCL) are regulatory standards used in drinking water treatment to ensure that the water is safe to drink. 
+                PHGs are non-enforceable health-based targets set by regulatory agencies to provide a level of protection against significant health risks from drinking water contaminants. 
+                On the other hand, MCLs are legally enforceable standards set by the Environmental Protection Agency (EPA) under the Safe Drinking Water Act (SDWA). 
+                These standards specify the maximum permissible levels of a chemical contaminant in drinking water that is supplied to the public.
+
+                It's important to note that while MCLs are set to protect public health, they are also established taking into account the cost and feasibility requirements of water utilities. 
+                This means that **MCLs may not always be set at the lowest possible level that would provide maximum health protection, but rather at a level that is considered reasonable and achievable given the current state of technology and the resources of water utilities.** 
+                """
+            )
+            st.info(
+                """While water utilities focus on MCLs, individuals should pay attention to health standards especially those with infants, mothers, and the elderly.""",
+                icon='🧐'
+            )
+
+        with st.expander('**How does the EPA decide which contaminant to regulate?**'):
+            st.markdown(
+                f"""
+                The Environmental Protection Agency (EPA) has rules for more than 90 different contaminants in drinking water to make sure it's safe to drink. 
+                The Safe Drinking Water Act (SDWA) lays out a process for the EPA to identify new contaminants that might need regulations. 
+                This includes creating a list of contaminants (called the Contaminant Candidate List) and deciding which of these contaminants should have regulations made for them.
+                
+                The EPA has to make a decision about at least five contaminants from this list every so often (this is called a regulatory determination). 
+                This decision starts the process of making a new rule (called a national primary drinking water regulation) for the specific contaminant. 
+                The EPA uses the list of contaminants to figure out which ones to study first and gather more information on, so they can make a better decision about whether to regulate it.
+
+                [Learn more]({'https://www.epa.gov/sdwa/how-epa-regulates-drinking-water-contaminants'})
+                """
+            )
+        with st.expander('**What should I do about this?**'):
+            st.markdown(
+                """
+                The best we can do is to minimize our exposure to contaminants, especially from forever chemicals found in water and everyday products such as food packaging, sunscreens, stain-resistant carpeting, firefighting foams, and non-stick cooking pans.
+                The most impactful way to do this is minimizing exposure from your **daily** drinking water.
+                Research and browse through the contaminants that exceed health standards and get a water filter suited to protect you from that.
+
+                Our personal recommendation is to get a **reverse osmosis** water filtration as that is the most effective and provides protection to more contaminants that other filters cannot.
+                """
+            )
 
 # -------- LANDING PAGE --------
 else:
-    hero_message = "<p style='text-align: center; font-family: Source Sans Pro, sans-serif; color:Gray;'>Get the most <b>up-to-date</b> information about your home's tap water.</p>"
+    hero_message = "<p style='text-align: center; font-family: Source Sans Pro, sans-serif; color:Gray;'>Get the most <b>up-to-date</b> information on your home's tap water.</p>"
     st.markdown(hero_message, unsafe_allow_html=True)
     st_lottie(lottie)
