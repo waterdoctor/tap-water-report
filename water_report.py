@@ -50,7 +50,6 @@ st.set_page_config(
 )
 
 # ----------------------------- FUNCTIONS -----------------------------
-@st.experimental_memo
 def get_contaminants(cont_list, count=1):
     count = count
     pfas = '(Forever Chemicals)'
@@ -59,7 +58,8 @@ def get_contaminants(cont_list, count=1):
         with st.expander(f"**{count}. {each.contaminant}** {pfas if each.contaminant.name in ['PFOS', 'PFOA'] else ''}"):
             #fig = gauge(each)
             #st.plotly_chart(fig, use_container_width=True)
-            
+            completion.progress(count/5)
+
             col1, col2, col3 = st.columns(3)
             with col1:
                 st.metric(label=":red[Highest Level Detected]", value=f"{each.max_reading if each.max_reading else each.perc} {each.contaminant.units}", delta=f"{'{:,.2f}'.format(float(each.factor))}x", delta_color='inverse')
@@ -84,6 +84,7 @@ def get_contaminants(cont_list, count=1):
 
             for f in filter_list:
                 st.markdown(f'- {f}')
+            
             count += 1
             st.markdown(vert_space, unsafe_allow_html=True)
 
@@ -116,6 +117,8 @@ st.markdown(main_title, unsafe_allow_html=True)
 st.markdown(vert_space, unsafe_allow_html=True)
 city_state_zip = st.selectbox('Enter your Zipcode', territories, label_visibility='collapsed')
 
+completion = st.progress(0.0)
+
 if city_state_zip:
     
     wutility = WaterUtility.get_from_db(city_state_zip)
@@ -126,7 +129,6 @@ if city_state_zip:
         color_name='blue-70'
     )
     tab1, tab2, tab3 = st.tabs(['Report', 'More Info', 'FAQs'])
-
     with tab1:
         readings = ContaminantReading.get_from_db(wutility)
         # Get top 5 contaminants

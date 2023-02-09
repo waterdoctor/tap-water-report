@@ -58,7 +58,7 @@ class WaterUtility:
 
     # Create a staticmethod to return WaterUtility object by territory
     @staticmethod
-    @st.experimental_memo
+    @st.experimental_memo(show_spinner=False)
     def get_from_db(territory: str):
         # Fetch item by key
         utility = pws.fetch({'territory?contains': territory}).items[0]
@@ -102,7 +102,7 @@ class Contaminant:
             rec_list.append('Ion Exchange')
         else: 
             rec_list.append('~~Ion Exchange~~')
-            
+
         return rec_list
 
 
@@ -134,7 +134,7 @@ class Contaminant:
 
     # Create a staticmethod to return Contaminant object by name
     @staticmethod
-    @st.experimental_memo
+    @st.experimental_memo(show_spinner=False)
     def get_from_db(ctmnt: str):
         # Fetch item by key
         contaminant = contaminants.fetch([{'name': ctmnt}, {'alt_names?contains': ctmnt}])
@@ -170,7 +170,7 @@ class ContaminantReading:
     
     # Get a list of ContaminantReading dicts from database
     @staticmethod
-    @st.experimental_memo
+    @st.experimental_memo(show_spinner=False)
     def get_from_db(wutility: WaterUtility) -> list[dict]:
         cr_list = []
         creadings = readings.fetch({'origin': wutility.pwsid, 'year': wutility.last_updated-1}).items
