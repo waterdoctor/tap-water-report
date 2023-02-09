@@ -88,9 +88,21 @@ class Contaminant:
     # Returns a short summary of what filtration method is recommended
     def get_filter_rec(self):
         rec_list = []
-        if self.RO: rec_list.append('Reverse Osmosis filtration')
-        if self.AC: rec_list.append('Activated Carbon filtration')
-        if self.Ion: rec_list.append('Ion Exchange')
+        if self.RO: 
+            rec_list.append('Reverse Osmosis filtration')
+        else:
+            rec_list.append('~~Reverse Osmosis filtration~~')
+
+        if self.AC: 
+            rec_list.append('Activated Carbon filtration')
+        else:
+            rec_list.append('~~Activated Carbon filtering~~')
+
+        if self.Ion: 
+            rec_list.append('Ion Exchange')
+        else: 
+            rec_list.append('~~Ion Exchange~~')
+            
         return rec_list
 
 
