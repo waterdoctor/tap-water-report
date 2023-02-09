@@ -193,6 +193,25 @@ if city_state_zip:
     
     with tab3:
         st.header('Frequently Asked Questions')
+        with st.expander('**How reliable are the contaminant numbers reported here?**'):
+            st.markdown(
+                f"""
+                All contaminant readings reported in this report was derived from the latest Consumer Confidence Report (aka Water Quality Report) that your
+                local water utility is required to publish annually. The public health goal and minimum contaminant level standards were either sourced
+                directly from the CCR or directly from the EPA.
+
+                If you want a more in-depth look into the report, we highly recommend you look at the CCR report, [here]({wutility.pdf}).
+                """
+            )
+        with st.expander('**Why did you create this water report?**'):
+            st.markdown(
+                f"""
+                It's a fact that the water report published by local water utilities is difficult to read and understand. Seriously, [check it out]({wutility.pdf}) for yourself.
+                It's near impossible to identify which contaminants pose the greatest threat unless you individually calculate how much each contaminant exceeds health guidelines.
+
+                In addition, alternative websites that post "Water Reports" are either outdated and/or sourced from the same outdated databases. 
+                """
+            )
         with st.expander('**What is the difference between a Health Goal vs. Minimum Contaminant Level?**'):
             st.markdown(
                 """
@@ -234,6 +253,7 @@ if city_state_zip:
                 Our personal recommendation is to get a **reverse osmosis** water filtration as that is the most effective and provides protection to more contaminants that other filters cannot.
                 """
             )
+        
 
 # -------- LANDING PAGE --------
 else:
