@@ -21,7 +21,7 @@ def img_to_bytes(img_path):
     return encoded
 
 def img_to_html(img_path):
-    img_html = "<a href='https://waterdoctorusa.com'><img src='data:image/png;base64,{}' width='50' class='img-fluid'></a>".format(
+    img_html = "<a href='https://waterdoctorusa.com/about'><img src='data:image/png;base64,{}' width='50' class='img-fluid'></a>".format(
       img_to_bytes(img_path)
     )
     return img_html
@@ -125,7 +125,7 @@ if city_state_zip:
         description=f'Data was sourced from the most recent Consumer Confidence Report (CCR) published by :blue[{wutility.name}] on {wutility.publish}. [Source]({wutility.pdf})',
         color_name='blue-70'
     )
-    tab1, tab2, tab3 = st.tabs(['Report', 'More Info', 'FAQs'])
+    tab1, tab2, tab3 = st.tabs(['Report', 'Water Source', 'FAQs'])
     with tab1:
         readings = ContaminantReading.get_from_db(wutility)
         # Get top 5 contaminants
@@ -191,32 +191,22 @@ if city_state_zip:
         st.write(f'{wutility.treatment}')
     
     with tab3:
+        st.info(
+            f"""
+            All contaminants, public health goals and minimum contaminant level standards in this 
+            report was sourced from the [EPA]('https://www.epa.gov/ground-water-and-drinking-water/national-primary-drinking-water-regulations#six') 
+            and the latest Consumer Confidence Report ([CCR]({wutility.pdf})) that your
+            local water utility is required to publish annually.
+            """,
+            icon='📝'
+        )
         st.header('Frequently Asked Questions')
-        with st.expander('**How reliable are the contaminant numbers reported here?**'):
-            st.markdown(
-                f"""
-                All contaminant readings reported in this report was derived from the latest Consumer Confidence Report (aka Water Quality Report) that your
-                local water utility is required to publish annually. The public health goal and minimum contaminant level standards were either sourced
-                directly from the CCR or directly from the EPA.
-
-                If you want a more in-depth look into the report, we highly recommend you look at the CCR report, [here]({wutility.pdf}).
-                """
-            )
-        with st.expander('**Why did you create this water report?**'):
-            st.markdown(
-                f"""
-                It's a fact that the water report published by local water utilities is difficult to read and understand. Seriously, [check it out]({wutility.pdf}) for yourself.
-                It's near impossible to identify which contaminants pose the greatest threat unless you individually calculate how much each contaminant exceeds health guidelines.
-
-                In addition, alternative websites that post "Water Reports" are either outdated and/or sourced from the same outdated databases. 
-                """
-            )
         with st.expander('**What is the difference between a Health Goal vs. Minimum Contaminant Level?**'):
             st.markdown(
                 """
                 Public health goal (PHG) and minimum contaminant level (MCL) are regulatory standards used in drinking water treatment to ensure that the water is safe to drink. 
                 PHGs are non-enforceable health-based targets set by regulatory agencies to provide a level of protection against significant health risks from drinking water contaminants. 
-                On the other hand, MCLs are legally enforceable standards set by the Environmental Protection Agency (EPA) under the Safe Drinking Water Act (SDWA). 
+                MCLs, on the other hand, are legally enforceable standards set by the Environmental Protection Agency (EPA) under the Safe Drinking Water Act (SDWA). 
                 These standards specify the maximum permissible levels of a chemical contaminant in drinking water that is supplied to the public.
 
                 It's important to note that while MCLs are set to protect public health, they are also established taking into account the cost and feasibility requirements of water utilities. 
@@ -235,29 +225,36 @@ if city_state_zip:
                 The Safe Drinking Water Act (SDWA) lays out a process for the EPA to identify new contaminants that might need regulations. 
                 This includes creating a list of contaminants (called the Contaminant Candidate List) and deciding which of these contaminants should have regulations made for them.
                 
-                The EPA has to make a decision about at least five contaminants from this list every so often (this is called a regulatory determination). 
-                This decision starts the process of making a new rule (called a national primary drinking water regulation) for the specific contaminant. 
+                The EPA has to make a decision about at least five contaminants from this list every so often (this is called a Regulatory Determination). 
+                This decision starts the process of making a new rule (called a National Primary Drinking Water Regulation) for the specific contaminant. 
                 The EPA uses the list of contaminants to figure out which ones to study first and gather more information on, so they can make a better decision about whether to regulate it.
 
-                [Learn more]({'https://www.epa.gov/sdwa/how-epa-regulates-drinking-water-contaminants'})
+                [Learn more]({'https://www.epa.gov/sdwa/how-epa-regulates-drinking-water-contaminants'}).
                 """
             )
-        with st.expander('**What should I do about this?**'):
+        with st.expander('**What should I do with this information?**'):
             st.markdown(
                 """
                 The best we can do is to minimize our exposure to contaminants.
                 The most impactful way to do this is minimizing exposure from your **daily** drinking water.
-                Research and browse through the contaminants that exceed health standards and get a water filter suited to protect you from that.
-
-                Our personal recommendation is to get a **reverse osmosis** water filtration as that is the most effective and provides protection to more contaminants that other filters cannot.
+                Browse through the contaminants that exceed health standards and get a water filter suited to protect you from that.
                 """
+            )
+            st.success(
+                """
+                Our personal recommendation is to get a **reverse osmosis** water filtration as that 
+                is the most effective and provides protection from more contaminants that other 
+                filters cannot.
+                """,
             )
         with st.expander('**Where can I find more information about my drinking water and regulations?**'):
             st.markdown(
                 f"""
-                While there are many resources online, we highly recommend EPA's resources on drinking water, which can be found [here]({'https://www.epa.gov/ground-water-and-drinking-water'})
+                While there are many resources online, we highly recommend EPA's resources on drinking water, which can be found [here]({'https://www.epa.gov/ground-water-and-drinking-water'}).
                 """
             )
+        #'---'
+        #st.subheader('Different Types of Water Filters')
         
 
 # -------- LANDING PAGE --------
