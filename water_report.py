@@ -194,7 +194,7 @@ if city_state_zip:
         st.info(
             f"""
             All contaminants, public health goals and minimum contaminant level standards in this 
-            report was sourced from the [EPA]('https://www.epa.gov/ground-water-and-drinking-water/national-primary-drinking-water-regulations#six') 
+            report was sourced from the [EPA](https://www.epa.gov/ground-water-and-drinking-water/national-primary-drinking-water-regulations) 
             and the latest Consumer Confidence Report ([CCR]({wutility.pdf})) that your
             local water utility is required to publish annually.
             """,
@@ -229,7 +229,7 @@ if city_state_zip:
                 This decision starts the process of making a new rule (called a National Primary Drinking Water Regulation) for the specific contaminant. 
                 The EPA uses the list of contaminants to figure out which ones to study first and gather more information on, so they can make a better decision about whether to regulate it.
 
-                [Learn more]({'https://www.epa.gov/sdwa/how-epa-regulates-drinking-water-contaminants'}).
+                [Learn more](https://www.epa.gov/sdwa/how-epa-regulates-drinking-water-contaminants).
                 """
             )
         with st.expander('**What should I do with this information?**'):
@@ -250,7 +250,7 @@ if city_state_zip:
         with st.expander('**Where can I find more information about my drinking water and regulations?**'):
             st.markdown(
                 f"""
-                While there are many resources online, we highly recommend EPA's resources on drinking water, which can be found [here]({'https://www.epa.gov/ground-water-and-drinking-water'}).
+                While there are many resources online, we highly recommend EPA's resources on drinking water, which can be found [here](https://www.epa.gov/ground-water-and-drinking-water).
                 """
             )
         #'---'
