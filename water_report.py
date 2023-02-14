@@ -33,38 +33,6 @@ def local_css(file_name):
     with open(file_name) as f:
         st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-# -------- GOOGLE ANALYTICS --------
-def inject_ga():
-    GA_ID = "google_analytics"
-
-    GA_JS = """
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZQ527HHEBC"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-
-        gtag('config', 'G-ZQ527HHEBC');
-    </script>
-    """
-
-    # Insert the script in the head tag of the static template inside your virtual
-    index_path = Path(st.__file__).parent / "static" / "index.html"
-    soup = BeautifulSoup(index_path.read_text(), features="html.parser")
-    if not soup.find(id=GA_ID): 
-        bck_index = index_path.with_suffix('.bck')
-        if bck_index.exists():
-            shutil.copy(bck_index, index_path)  
-        else:
-            shutil.copy(index_path, bck_index)
-        logging.info(f'editing {index_path}')
-        html = str(soup)
-        new_html = html.replace('<head>', '<head>\n' + GA_JS)
-        index_path.write_text(new_html)
-
-
-inject_ga()
 
 # -------- SETTINGS --------
 vert_space = '<div style="padding: 10px 5px;"></div>'
@@ -120,22 +88,6 @@ def get_contaminants(cont_list, count=1):
             count += 1
             st.markdown(vert_space, unsafe_allow_html=True)
 
-def gauge(each):
-    each.max_reading = each.max_reading if each.max_reading else each.perc
-    each.mcl = each.mcl if each.mcl else each.mclg
-    max_gauge = [float(each.max_reading), float(each.mcl)]
-    fig = go.Figure(go.Indicator(
-        domain = {'x': [0, 1], 'y': [0, 1]},
-        value = float(each.max_reading),
-        mode = "gauge+number",
-        title = {'text': f"Contaminant Reading for {each.contaminant.name}"},
-        gauge = {'axis': {'range': [None, max(max_gauge)]},
-                'steps' : [
-                    {'range': [float(each.mclg), float(f'{each.mcl if each.mcl else each.mclg}')], 'color': "lightgray"},
-                    {'range': [float(f'{each.mcl if each.mcl else each.mclg}'), max(max_gauge)], 'color': 'lightgray'}
-                    ],
-                'threshold' : {'line': {'color': "red", 'width': 6}, 'thickness': 0.8, 'value': float(each.mclg)}}))
-    return fig
 
 # -------------------------------- APP --------------------------------
 
