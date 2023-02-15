@@ -186,6 +186,17 @@ if city_state_zip:
             icon='📝'
         )
         st.header('Frequently Asked Questions')
+        with st.expander('**How accurate and reliable are the reported figures?**'):
+            st.markdown(
+                """
+                In terms of the reliability of the figures, you can rest assured that all 
+                reported figures were sourced directly from your local water utility. 
+                
+                In terms of accuracy, you should be mindful that the contents of tap water could vary from one home to another, 
+                even within the same block. The figures reported here is a good starting point, and those who want to learn more,
+                should conduct their own testing for more clarity.
+                """
+            )
         with st.expander('**What is the difference between a Health Goal vs. Minimum Contaminant Level?**'):
             st.markdown(
                 """
@@ -238,8 +249,7 @@ if city_state_zip:
                 While there are many resources online, we highly recommend EPA's resources on drinking water, which can be found [here](https://www.epa.gov/ground-water-and-drinking-water).
                 """
             )
-        #'---'
-        #st.subheader('Different Types of Water Filters')
+
         
 
 # -------- LANDING PAGE --------
@@ -247,3 +257,17 @@ else:
     hero_message = "<p style='text-align: center; font-family: Source Sans Pro, sans-serif; color:Gray;'>Get the most <b>up-to-date</b> information on your home's tap water.</p>"
     st.markdown(hero_message, unsafe_allow_html=True)
     st_lottie(lottie)
+    st.caption(
+        """
+        :blue[Can't find your zipcode?] We're constantly adding more cities to our list. Tell us your zipcode and email, and we'll contact you when we add your city's water report!
+        """
+    )
+
+    if st.button('Add my zipcode'):
+        with st.sidebar:
+            st.header('Get your water report')
+            form = st.form(key='add zipcode')
+
+            zip = form.text_input('Enter your zipcode')
+            email = form.text_input('Your email')
+            submit = form.form_submit_button(label='Submit')
