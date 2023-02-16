@@ -9,6 +9,17 @@ deta = Deta(st.secrets['deta_key'])
 pws = deta.Base('pws')
 contaminants = deta.Base('contaminants_db')
 readings = deta.Base('readings')
+zip_request = deta.Base('zip_request')
+
+
+@dataclass
+class ZipRequest:
+    zipcode: str
+    email: str
+
+    def add_to_db(self):
+        zip_request.insert(asdict(self))
+
 
 @dataclass
 class WaterUtility:

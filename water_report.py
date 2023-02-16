@@ -1,10 +1,7 @@
-from models import WaterUtility, Contaminant, ContaminantReading
+from models import WaterUtility, ContaminantReading, ZipRequest
 import json
 import base64
 from pathlib import Path
-from bs4 import BeautifulSoup
-import logging
-import shutil
 
 import pandas as pd
 import streamlit as st
@@ -259,15 +256,19 @@ else:
     st_lottie(lottie)
     st.caption(
         """
-        :blue[Can't find your zipcode?] We're constantly adding more cities to our list. Tell us your zipcode and email, and we'll contact you when we add your city's water report!
+        :blue[Can't find your zipcode?] We're constantly adding more cities to our list.
         """
     )
+    with st.expander("Tell us your zipcode and email, and we'll contact you when we add your city's water report!"):
 
-    if st.button('Add my zipcode'):
-        with st.sidebar:
-            st.header('Get your water report')
-            form = st.form(key='add zipcode')
+        form = st.form(key='add zipcode', clear_on_submit=True)
+        zip = form.text_input('Enter your zipcode')
+        email = form.text_input('Your email')
 
-            zip = form.text_input('Enter your zipcode')
-            email = form.text_input('Your email')
-            submit = form.form_submit_button(label='Submit')
+        submit = form.form_submit_button(label='Submit')
+
+        if submit:
+            form_request = ZipRequest(zip, email)
+            form_request.add_to_db()
+            st.success('Your request has been submitted!', icon='🤓')
+            st.balloons()
