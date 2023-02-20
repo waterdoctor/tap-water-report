@@ -31,6 +31,12 @@ def local_css(file_name):
         st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 
+# ------- PAGE CONFIG -------
+st.set_page_config(
+    page_title='Tap Water Data',
+    page_icon='logo/logo.png',
+)
+
 # -------- SETTINGS --------
 vert_space = '<div style="padding: 10px 5px;"></div>'
 territories = WaterUtility.get_all()
@@ -38,13 +44,16 @@ logo = 'https://lh4.googleusercontent.com/r_DvVzF2wmpBC3ZVQBlofpveBTkLTNPWE8RBFh
 centered_logo = "<p style='text-align: center; color: grey;'>"+img_to_html('logo/logo.png')+"</p>"
 by_wd = 'https://lh5.googleusercontent.com/V-DcILHJebKcQO9vRDkr45ALqKNYwfoutn-LOyS9Hcv1ysjetx3J7ltuQ2Ua3EEs53Q=w2400'
 lottie = load_lottiefile('lottie/water_report.json')
+# Removes border on all streamlit forms
+css = r'''
+        <style>
+            [data-testid="stForm"] {border: 0px}
+        </style>
+    '''
+st.markdown(css, unsafe_allow_html=True)
 
 
-# ------- PAGE CONFIG -------
-st.set_page_config(
-    page_title='Tap Water Data',
-    page_icon='logo/logo.png',
-)
+
 
 # ----------------------------- FUNCTIONS -----------------------------
 def get_contaminants(cont_list, count=1):
@@ -185,12 +194,10 @@ if city_state_zip:
         with st.expander('**How accurate and reliable are the reported figures?**'):
             st.markdown(
                 """
-                In terms of the reliability of the figures, you can rest assured that all 
-                reported figures were sourced directly from your local water utility. 
-                
-                In terms of accuracy, you should be mindful that the contents of tap water could vary from one home to another, 
-                even within the same block. The figures reported here is a good starting point, and those who want to learn more,
-                should conduct their own testing for more clarity.
+                You can be confident in the reliability of the figures as they were obtained directly from your local water utility.
+
+                However, it's important to note that the contents of your tap water may differ between households, even in close proximity. 
+                While the figures presented here provide a solid foundation, for a more comprehensive understanding, it's recommended that you conduct your own testing.
                 """
             )
         with st.expander('**What is the difference between a Health Goal vs. Minimum Contaminant Level?**'):
@@ -245,6 +252,14 @@ if city_state_zip:
                 While there are many resources online, we highly recommend EPA's resources on drinking water, which can be found [here](https://www.epa.gov/ground-water-and-drinking-water).
                 """
             )
+        st.success(
+            """
+            Have more questions about your drinking water? Give us an email and we'll be happy to answer them!
+
+            support@waterdoctorusa.com
+            """,
+            icon='❓'
+        )
 
         
 
