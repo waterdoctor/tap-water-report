@@ -44,7 +44,6 @@ lottie = load_lottiefile('lottie/water_report.json')
 st.set_page_config(
     page_title='Tap Water Data',
     page_icon='logo/logo.png',
-    initial_sidebar_state='expanded',
 )
 
 # ----------------------------- FUNCTIONS -----------------------------
