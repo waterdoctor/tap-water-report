@@ -35,6 +35,11 @@ def local_css(file_name):
 st.set_page_config(
     page_title='Tap Water Data',
     page_icon='logo/logo.png',
+    menu_items={
+        'Get Help': None,
+        'Report a bug': None,
+        'About': "[**WATERDOCTOR**](https://waterdoctorusa.com)"
+    }
 )
 
 # -------- SETTINGS --------
@@ -188,7 +193,7 @@ if city_state_zip:
             and the latest Consumer Confidence Report ([CCR]({wutility.pdf})) that your
             local water utility is required to publish annually.
             """,
-            icon='📝'
+            icon='ℹ️'
         )
         st.header('Frequently Asked Questions')
         with st.expander('**How accurate and reliable are the reported figures?**'):
@@ -258,7 +263,7 @@ if city_state_zip:
 
             support@waterdoctorusa.com
             """,
-            icon='❓'
+            icon='✉️'
         )
 
         
