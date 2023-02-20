@@ -155,8 +155,8 @@ if city_state_zip:
         st.header('Top 5 Contaminants Found in Your Water')
         st.info(
             """
-            The contaminants listed here is only a handful of contaminants found in your water.
-            There's many more that go untested.
+            The contaminants listed here are only a handful of contaminants found in your water.
+            There are many more that go untested.
             """,
             icon='👀'
         )
