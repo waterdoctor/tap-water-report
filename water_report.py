@@ -284,5 +284,5 @@ else:
         if submit:
             form_request = ZipRequest(zip, email)
             form_request.add_to_db()
-            st.success('Your request has been submitted!', icon='🤓')
+            st.success('Your request has been submitted!', icon='🥸')
             st.balloons()
